@@ -1,97 +1,324 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZapMercado V8.2 - Site Oficial</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { --verde: #25d366; --dark: #0f172a; --ouro: #facc15; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; text-align: center; }
-        
-        .header { padding: 40px 20px; background: linear-gradient(180deg, rgba(37,211,102,0.1) 0%, transparent 100%); }
-        h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        .highlight { color: var(--verde); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZapLista - Lista de Compras Inteligente</title>
 
-        /* Estilo das Ilustrações */
-        .container-imgs { padding: 20px; max-width: 500px; margin: 0 auto; }
-        .card-img { 
-            background: rgba(255,255,255,0.05); 
-            border-radius: 20px; 
-            margin-bottom: 30px; 
-            overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .card-img img { width: 100%; display: block; height: auto; }
-        .card-img p { padding: 15px; font-size: 1.1rem; line-height: 1.4; color: #cbd5e1; }
+<style>
+:root{
+    --marrom:#6D553D;
+    --marrom-claro:#D4C3AF;
+    --verde:#22c55e;
+    --fundo:#f8f6f3;
+    --texto:#2b2b2b;
+    --branco:#fff;
+}
 
-        .cta-box { 
-            position: sticky; bottom: 0; background: rgba(15, 23, 42, 0.9); 
-            backdrop-filter: blur(10px); padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); 
-        }
-        
-        .btn-baixar {
-            display: block; background: var(--verde); color: white; 
-            text-decoration: none; padding: 20px; border-radius: 15px; 
-            font-size: 1.5rem; font-weight: bold; animation: pulse 2s infinite;
-        }
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    </style>
+body{
+    font-family: Arial, sans-serif;
+    background:var(--fundo);
+    color:var(--texto);
+    line-height:1.5;
+}
+
+.container{
+    max-width:480px;
+    margin:auto;
+    background:var(--branco);
+    min-height:100vh;
+}
+
+section{
+    padding:28px 20px;
+}
+
+.hero{
+    text-align:center;
+    background:linear-gradient(180deg,#fff,#f4eee8);
+    padding-top:40px;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:var(--marrom);
+    margin-bottom:15px;
+}
+
+.hero h1{
+    font-size:28px;
+    margin-bottom:15px;
+}
+
+.hero p{
+    font-size:17px;
+    color:#555;
+    margin-bottom:22px;
+}
+
+.btn{
+    display:block;
+    width:100%;
+    background:var(--verde);
+    color:white;
+    text-align:center;
+    padding:16px;
+    border-radius:14px;
+    font-size:18px;
+    font-weight:bold;
+    text-decoration:none;
+    box-shadow:0 6px 14px rgba(34,197,94,0.25);
+    margin-top:15px;
+}
+
+.btn-marrom{
+    background:var(--marrom);
+    box-shadow:0 6px 14px rgba(109,85,61,0.25);
+}
+
+.video-box{
+    background:#eee;
+    border-radius:18px;
+    height:240px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#777;
+    text-align:center;
+    padding:20px;
+    margin-top:15px;
+}
+
+.card{
+    background:#fafafa;
+    padding:18px;
+    border-radius:16px;
+    margin-bottom:14px;
+    border:1px solid #eee;
+}
+
+.card h3{
+    color:var(--marrom);
+    margin-bottom:6px;
+}
+
+.dor{
+    background:#fff4f4;
+}
+
+.solucao{
+    background:#f0fff8;
+}
+
+.preco{
+    text-align:center;
+    background:#fff;
+}
+
+.preco h2{
+    font-size:24px;
+    margin-bottom:10px;
+}
+
+.valor{
+    font-size:42px;
+    color:var(--verde);
+    font-weight:bold;
+    margin:10px 0;
+}
+
+.antigo{
+    color:#999;
+    text-decoration:line-through;
+    font-size:18px;
+}
+
+.urgencia{
+    background:#fff8e1;
+    color:#8a5a00;
+    padding:12px;
+    border-radius:12px;
+    margin:15px 0;
+    font-weight:bold;
+}
+
+.prova{
+    text-align:center;
+    background:#f4eee8;
+    font-weight:bold;
+    color:var(--marrom);
+}
+
+.lista{
+    margin-top:12px;
+}
+
+.lista p{
+    margin-bottom:8px;
+}
+
+footer{
+    text-align:center;
+    padding:25px 20px;
+    color:#777;
+    font-size:14px;
+}
+
+.whatsapp{
+    background:#25D366;
+}
+</style>
 </head>
+
 <body>
 
-    <div class="header">
-        <div style="font-size: 50px; margin-bottom: 15px;">🛒</div>
-        <h1>Z <span class="highlight">V8.2</span></h1>
-        <p>O único app que te avisa o que aumentou de preço!</p>
-    </div>
+<div class="container">
 
-    <div class="container-imgs">
-        <!-- IMAGEM 1: CAPA -->
-        <div class="card-img">
-            <img src="https://tecladomagicokids-cmd.github.io/Imagens/Gemini_Generated_Image_ywnlijywnlijywnl.png" alt="ZapMercado em uso">
-            <p><b>Controle Total:</b> Saiba quanto vai pagar antes de chegar no caixa.</p>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="logo">🛒 ZapLista</div>
+
+        <h1>Pare de esquecer itens no mercado e gastar mais do que deveria</h1>
+
+        <p>
+            Crie sua lista de compras inteligente, controle seus gastos
+            e envie tudo direto no WhatsApp com 1 clique.
+        </p>
+
+        <a href="#comprar" class="btn">✅ Começar agora</a>
+    </section>
+
+    <!-- VIDEO -->
+    <section>
+        <h2>Veja como funciona</h2>
+
+        <div class="video-box">
+            Coloque aqui seu vídeo demonstrando o ZapLista funcionando
+        </div>
+    </section>
+
+    <!-- BENEFICIOS -->
+    <section>
+        <h2>Por que usar o ZapLista?</h2>
+
+        <div class="card">
+            <h3>✔ Nunca mais esqueça nada</h3>
+            <p>Organize tudo antes de sair de casa e compre com mais segurança.</p>
         </div>
 
-        <!-- IMAGEM 2: COMPARADOR -->
-        <div class="card-img">
-            <img src="img/comparador.webp" alt="Comparar preços">
-            <p><b>Inteligência:</b> O app compara com suas listas antigas e mostra o que subiu de preço.</p>
+        <div class="card">
+            <h3>✔ Controle seus gastos</h3>
+            <p>Veja quanto sua compra vai dar antes mesmo de chegar no caixa.</p>
         </div>
 
-        <!-- IMAGEM 3: PESO/KG -->
-        <div class="card-img">
-            <img src="img/peso.webp" alt="Cálculo por KG">
-            <p><b>Açougue e Hortifrúti:</b> Cálculo automático por KG ou Unidade.</p>
+        <div class="card">
+            <h3>✔ Compartilhe no WhatsApp</h3>
+            <p>Envie a lista completa para quem for comprar em poucos segundos.</p>
+        </div>
+    </section>
+
+    <!-- DOR -->
+    <section class="dor">
+        <h2>Isso já aconteceu com você?</h2>
+
+        <div class="lista">
+            <p>❌ Foi ao mercado e esqueceu item importante?</p>
+            <p>❌ Comprou coisas a mais sem perceber?</p>
+            <p>❌ Passou do orçamento no caixa?</p>
         </div>
 
-        <!-- IMAGEM 4: CARRINHO -->
-        <div class="card-img">
-            <img src="img/uso_real.webp" alt="Check no carrinho">
-            <p><b>Praticidade:</b> Marque os itens no carrinho e não esqueça nada.</p>
+        <p style="margin-top:15px;">
+            Isso acontece porque falta controle na hora de organizar a compra.
+        </p>
+    </section>
+
+    <!-- SOLUCAO -->
+    <section class="solucao">
+        <h2>Com o ZapLista você resolve isso</h2>
+
+        <div class="lista">
+            <p>✅ Cria listas organizadas</p>
+            <p>✅ Marca produtos comprados</p>
+            <p>✅ Calcula total da compra</p>
+            <p>✅ Mostra quanto sobrou ou ultrapassou</p>
+            <p>✅ Compartilha tudo no WhatsApp</p>
+        </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section>
+        <h2>Como funciona?</h2>
+
+        <div class="card">
+            <h3>1. Crie sua lista</h3>
+            <p>Digite o nome da compra e o orçamento.</p>
         </div>
 
-        <!-- IMAGEM 5: WHATSAPP -->
-        <div class="card-img">
-            <img src="img/whats.webp" alt="Compartilhar lista">
-            <p><b>Sincronia:</b> Envie o resumo detalhado para sua família em 1 clique.</p>
+        <div class="card">
+            <h3>2. Adicione os produtos</h3>
+            <p>Coloque nome, preço e quantidade.</p>
         </div>
 
-        <!-- IMAGEM 6: OFERTA -->
-        <div class="card-img">
-            <img src="img/oferta.webp" alt="Valor Promocional">
-            <p><b>Oferta Especial:</b> Acesso Vitalício por apenas <span style="color:var(--ouro)">R$ 4,99</span>.</p>
+        <div class="card">
+            <h3>3. Acompanhe o total</h3>
+            <p>Veja em tempo real quanto vai gastar.</p>
         </div>
-    </div>
 
-    <div class="cta-box">
-        <!-- COLOQUE O LINK DIRETO PARA O SEU ARQUIVO NO GITHUB AQUI -->
-        <a href="URL_DO_SEU_GITHUB/app_zapmercado.html" download class="btn-baixar">
-            <i class="fas fa-download"></i> BAIXAR APP AGORA
+        <div class="card">
+            <h3>4. Envie no WhatsApp</h3>
+            <p>Compartilhe sua lista completa com apenas 1 clique.</p>
+        </div>
+    </section>
+
+    <!-- PROVA SOCIAL -->
+    <section class="prova">
+        🔥 Mais de 3.000 pessoas já estão organizando suas compras
+    </section>
+
+    <!-- PRECO -->
+    <section class="preco" id="comprar">
+        <h2>Libere seu acesso agora</h2>
+
+        <p class="antigo">De R$ 19,90</p>
+
+        <div class="valor">R$ 4,99</div>
+
+        <p>Pagamento único. Sem mensalidade.</p>
+
+        <div class="urgencia">
+            ⚠️ Oferta promocional por tempo limitado
+        </div>
+
+        <!-- TROQUE ESSE LINK PELO LINK DO SEU PAGAMENTO -->
+        <a href="https://SEU-LINK-DE-PAGAMENTO-AQUI" class="btn">
+            🚀 Liberar meu acesso
         </a>
-        <p style="font-size: 12px; margin-top: 10px; color: #94a3b8;">Baixe grátis e faça o pagamento dentro do app.</p>
-    </div>
+    </section>
+
+    <!-- DUVIDAS -->
+    <section>
+        <h2>Ficou com dúvida?</h2>
+        <p>Fale direto no WhatsApp antes de liberar seu acesso.</p>
+
+        <!-- TROQUE O NUMERO PELO SEU WHATSAPP -->
+        <a href="https://wa.me/5500000000000?text=Quero%20saber%20mais%20sobre%20o%20ZapLista" class="btn whatsapp">
+            💬 Falar no WhatsApp
+        </a>
+    </section>
+
+    <footer>
+        <p><strong>ZapLista</strong></p>
+        <p>Que Deus abençoe sua despensa 🙏</p>
+    </footer>
+
+</div>
 
 </body>
 </html>
