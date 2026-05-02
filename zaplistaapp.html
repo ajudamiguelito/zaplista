@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZapLista</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+:root {
+    --marrom-primario: #6D553D;
+    --marrom-claro: #D4C3AF;
+    --fundo-app: #f8f9fa;
+    --verde-sucesso: #2cb396;
+    --vermelho-alerta: #e74c3c;
+    --branco: #ffffff;
+}
+
+/* Pagamento separado do app */
+#bloqueio {
+    --pagamento-verde: #22c55e;
+    --pagamento-amarelo: #facc15;
+    --pagamento-vermelho: #f87171;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    font-family: "Segoe UI", "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+    background-color: var(--fundo-app);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    background: var(--branco);
+    min-height: 100vh;
+    display: flex; /* app bloqueado por padrão */
+    flex-direction: column;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+        .header {
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { background: var(--marrom-primario); color: white; padding: 10px; border-radius: 12px; }
+
+        .view { display: none; flex-direction: column; flex-grow: 1; padding: 20px; }
+        .view.active { display: flex; }
+
+        .budget-card {
+            background: #fff; border: 1px solid #eee; border-radius: 20px;
+            padding: 20px; margin-bottom: 20px;
+            display: flex; justify-content: space-between;
+        }
+        
+        .budget-main { flex: 1; }
+        .budget-confirmed { text-align: right; border-left: 1px solid #eee; padding-left: 15px; }
+
+        .budget-value { font-size: 1.8rem; font-weight: bold; margin: 5px 0; color: var(--verde-sucesso); }
+        .confirmed-value { font-size: 1.2rem; font-weight: bold; color: var(--marrom-primario); margin-top: 5px; }
+
+        .btn-marrom { background: var(--marrom-primario); color: white; border: none; border-radius: 12px; padding: 15px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; font-size: 1rem; margin-bottom: 10px; }
+
+        .item-card {
+            background: white; border: 1px solid #f5f5f5; border-radius: 15px;
+            padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .item-card.checked {
+    background: #f8f5f2;
+    border: 1px solid #6D553D;
+    box-shadow: 0 2px 6px rgba(109,85,61,0.1);
+}
+
+        .info-row { color: #888; font-size: 0.85rem; margin: 3px 0; }
+        .subtotal-row { color: #555; font-weight: bold; font-size: 0.95rem; margin-top: 5px; }
+
+        .summary-footer {
+            background: #fafafa;
+            border-top: 1px solid #eee;
+            padding: 20px;
+            margin-top: auto;
+        }
+
+        .summary-line {
+            display: flex; justify-content: space-between;
+            margin-bottom: 8px; font-size: 0.95rem;
+        } 
+  
+#bloqueio{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:url('https://www.organizze.com.br/blog/wp-content/uploads/lista-de-compras-do-mes.jpg') center/cover no-repeat;
+    z-index:9999;
+}
+
+.overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.65);
+}
+
+.box{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    max-width:350px;
+    padding:30px;
+    border-radius:20px;
+    background:rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+    color:#fff;
+
+    opacity:0;
+    transform:translateY(20px);
+    animation:fade 0.8s ease forwards;
+}
+
+@keyframes fade{
+    to{opacity:1; transform:translateY(0);}
+}
+
+.price{
+    font-size:30px;
+    color:var(--pagamento-verde);
+    font-weight:bold;
+    margin:10px 0 20px;
+}
+
+.box button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:var(--pagamento-verde);
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.05);}
+    100%{transform:scale(1);}
+}
+
+.timer{margin-top:15px;color:var(--pagamento-amarelo);}
+.urgencia{margin-top:10px;color:var(--pagamento-vermelho);font-weight:bold;}
+.social{margin-top:10px;color:#ccc;font-size:13px;}
+
+.check-lista {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--marrom-primario);
+    margin-left: 5px;
+}
+
+
+button {
+    touch-action: manipulation;
+}
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #bdbdbd;
+    border-radius: 10px;
+    margin: 5px 0 15px;
+    font-size: 1rem;
+    background: #ffffff;
+}
+.money-input {
+    width: 100%;
+    height: 42px;              /* 🔥 garante altura fixa */
+    padding-left: 35px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+
+    display: flex;
+    align-items: center;       /* centraliza conteúdo */
+}
+
+input:focus {
+    outline: none;
+    border-color: #6D553D;
+    box-shadow: 0 0 0 2px rgba(109,85,61,0.25);
+}
+::selection {
+    background: #1a73e8;
+    color: #fff;
+}
+
+   .modal{
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    justify-content: center; /* faltava */
+    align-items: center;     /* PC centralizado */
+    background: rgba(0,0,0,0.6);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.modal-content{
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.modal-content2{
+    background: white;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 420px;
+
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column; /* 🔥 importante */
+    overflow: hidden;       /* 🔥 evita estourar */
+}
+
+.modal-comparacao {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+    
+.modal2{
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+
+    align-items: flex-start; /* 🔥 começa de cima */
+    padding-top: 40px;       /* 🔥 espaço do topo */
+
+    background: rgba(0,0,0,0.6);
+}  
+
+.money-wrapper {
+    position: relative;
+    width: 100%;
+    margin: 5px 0 15px;
+}
+
+.money-prefix {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.btn-bolinha{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:none;
+    background:#6D553D;
+    color:white;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.modal-base-produtos {
+    align-items: flex-end;
+}
+
+.modal-base-produtos .modal-content {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px 20px 0 0;
+    margin: 0;
+}
+
+.btn-topo{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    border:none;
+    background: var(--marrom-claro);
+    color: white;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.btn-topo:active{
+    transform: scale(0.95);
+}
+
+@media (max-width: 600px){
+.modal{
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: flex-start; /* só esse */
+    background: rgba(0,0,0,0.6);
+    padding: 20px;
+    padding-top: 60px;
+    overflow-y: auto;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ===== BLOQUEIO ===== -->
+<div id="bloqueio">
+    <div class="overlay"></div>
+
+    <div class="box">
+        <h1>Desbloquear ZapLista</h1>
+        <p>Libere todas as funções agora</p>
+
+        <div class="price" id="preco">R$ 4,99</div>
+
+        <button onclick="comprar()">Pagar e Liberar</button>
+
+        <div class="timer" id="timer">Oferta expira em 02:00</div>
+
+        <div class="urgencia" id="urgencia">
+            ⚠️ Últimas 7 liberações hoje
+        </div>
+
+        <div class="social">🔥 +3.200 usuários já liberaram</div>
+
+        <div id="status" style="margin-top:10px;font-size:13px;color:#ccc;"></div>
+    </div>
+
+    <audio id="clickSound" src="https://www.myinstants.com/media/sounds/mouse-click.mp3"></audio>
+</div>
+
+<!-- ===== APP ===== -->
+<div class="app-container">
+    <div class="header">
+    <div class="logo-area" onclick="voltarParaHome()" style="cursor:pointer">
+        <div class="logo-icon"><i class="fas fa-shopping-basket"></i></div>
+        <div>
+            <b style="color: var(--marrom-primario); font-size: 1.1rem;">ZapLista</b><br>
+            <small style="color: #888;">@ClubTNP</small>
+        </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button onclick="exigirPagamento(abrirModalBaseProdutos)" class="btn-topo">+</button>
+        <i class="fas fa-home fa-lg" style="color: var(--marrom-claro); cursor: pointer;" onclick="voltarParaHome()"></i>
+    </div>
+</div>
+
+    <div id="view-home" class="view active">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin:0">Minhas Listas</h3>
+			
+            <button class="btn-marrom" style="width:auto; padding: 8px 15px; border-radius: 8px; font-size: 0.8rem;" onclick="exigirPagamento(abrirModalLista)">+ Nova Lista</button>
+			
+		</div>
+        <div id="container-listas"></div>
+		<button class="btn-marrom" onclick="exigirPagamento(compararSelecionadas)" style="margin-top:15px;">
+    🔄 Comparar Listas Selecionadas
+</button>
+<button class="btn-marrom" onclick="exigirPagamento(abrirImportador)">
+📥 Importar Lista do WhatsApp
+</button>
+
+<button class="btn-marrom" onclick="exigirPagamento(exportarBackup)">
+📤 Exportar Backup
+</button>
+
+<button class="btn-marrom" onclick="clicarImportarBackup()">
+    📥 Importar Backup
+</button>
+
+<input id="input-backup"
+    type="file"
+    accept=".json"
+    onchange="importarBackup(event)"
+    style="display:none;">
+    </div>
+	
+<div id="modal-importar" class="modal">
+  <div class="modal-content">
+    <h3>Importar lista do WhatsApp</h3>
+
+    <textarea id="texto-whats" 
+    placeholder="Cole aqui a mensagem do WhatsApp..."
+    style="width:100%; height:150px; margin-bottom:15px;"></textarea>
+
+    <button class="btn-marrom" onclick="importarListaWhats()">
+      Importar Lista
+    </button>
+
+    <button onclick="fecharModais()" 
+    style="width:100%; border:none; background:none; color:gray; margin-top:10px;">
+      Cancelar
+    </button>
+  </div>
+</div>
+
+    <div id="view-detalhe" class="view">
+        <div style="display:flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+            <div style="display:flex; align-items: center; gap: 12px;">
+                <i class="fas fa-arrow-left" onclick="voltarParaHome()" style="cursor:pointer; color: #888;"></i>
+                <h3 id="nome-lista-ativa" style="margin:0; color: var(--marrom-primario);"></h3>
+            </div>
+            <button onclick="abrirModalEdicaoLista()" style="border:none; background:#eee; padding:5px 12px; border-radius:8px; font-size:0.75rem; font-weight:bold;">Editar</button>
+        </div>
+
+        <div class="budget-card">
+            <div class="budget-main">
+                <small id="label-saldo" style="color: #999; font-weight: bold; font-size: 0.7rem; text-transform: uppercase;">SALDO DISPONÍVEL</small>
+                <div class="budget-value" id="disp-topo">R$ 0,00</div>
+            </div>
+            <div class="budget-confirmed">
+                <small style="color: #999; font-weight: bold; font-size: 0.7rem; text-transform: uppercase;">Confirmados</small>
+                <div class="confirmed-value" id="conf-topo">R$ 0,00</div>
+            </div>
+        </div>
+
+        <button class="btn-marrom" onclick="exigirPagamento(() => abrirModalProduto())">
+            <i class="fas fa-plus-circle"></i> Adicionar Produto
+        </button>
+
+        <div id="container-itens" style="flex-grow:1; overflow-y: auto; margin: 10px 0;"></div>
+
+        <div class="summary-footer" id="resumo-financeiro">
+            <div class="summary-line"><span><b>Previsão:</b></span> <span id="res-previsao">R$ 0,00</span></div>
+            <div class="summary-line"><span><b>Confirmados:</b></span> <span id="res-confirmados">R$ 0,00</span></div>
+            <div class="summary-line"><span><b>Total na lista:</b></span> <span id="res-total">R$ 0,00</span></div>
+            <div class="summary-line"><span><b>Faltou da lista:</b></span> <span id="res-faltou">R$ 0,00</span></div>
+            <div class="summary-line" id="linha-sobrou"><span><b>Sobrou:</b></span> <span id="res-sobrou">R$ 0,00</span></div>
+            <div class="summary-line" id="linha-ultrapassou" style="display:none"><span><b>Ultrapassou:</b></span> <span id="res-ultrapassou">R$ 0,00</span></div>
+            
+            <button class="btn-marrom" onclick="exigirPagamento(compartilharNoZap)" style="margin-top:15px; margin-bottom:0;">
+                <i class="fab fa-whatsapp"></i> Compartilhar no WhatsApp
+            </button>
+			<button class="btn-marrom" onclick="desmarcarComprados()" style="margin-top:15px; margin-bottom:0;">
+    🔄 Desmarcar Comprados
+</button>
+			
+        </div>
+    </div>
+</div>
+
+<div id="modal-lista" class="modal">
+    <div class="modal-content">
+
+        <h3>Nova Lista</h3>
+
+        <label>Nome</label>
+        <input type="text" id="input-nome-lista">
+
+        <label>Orçamento</label>
+
+        <div class="money-wrapper">
+            <span class="money-prefix">R$</span>
+            <input class="money-input"
+                type="text"
+                id="input-orcamento-lista"
+                oninput="mascaraMoeda(this)"
+                inputmode="decimal">
+        </div>
+
+        <button class="btn-marrom" onclick="salvarLista()">Salvar</button>
+
+        <button onclick="fecharModais()"
+            style="width:100%; border:none; background:none; color:gray; margin-top:10px;">
+            Cancelar
+        </button>
+
+    </div>
+</div>
+<div id="modal-produto" class="modal">
+    <div class="modal-content">
+
+        <h3>Produto</h3>
+
+        <input type="text"
+            id="prod-nome"
+            placeholder="Nome"
+            oninput="filtrarSugestoes(this.value)">
+
+        <div id="sugestoes-box"
+            style="background:#fff; border:1px solid #ddd; border-radius:10px; max-height:120px; overflow-y:auto; display:none; margin-bottom:10px;">
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+            <input type="checkbox" id="prod-is-peso" style="width:18px;">
+            <label>Produto por Peso (KG)</label>
+        </div>
+
+        <label>Preço</label>
+
+        <div class="money-wrapper">
+            <span class="money-prefix">R$</span>
+            <input class="money-input"
+                type="text"
+                id="prod-preco"
+                oninput="mascaraMoeda(this)"
+                inputmode="decimal">
+        </div>
+
+        <input type="text"
+            id="prod-qtd"
+            oninput="mascaraPeso(this)"
+            placeholder="Quantidade ou Peso">
+
+        <button class="btn-marrom" onclick="salvarProduto()">Salvar</button>
+
+        <button onclick="fecharModais()"
+            style="width:100%; border:none; background:none; color:gray; margin-top:10px;">
+            Cancelar
+        </button>
+
+    </div>
+</div>
+
+<div id="modal-comparacao" class="modal2">
+    <div class="modal-content modal-comparacao" id="modal-comparacao-content"></div>
+</div>
+
+<div id="modal-base-produtos" class="modal modal-base-produtos">
+    <div class="modal-content">
+        <h3>Base de Produtos</h3>
+
+        <textarea id="texto-base-produtos"
+            placeholder="Cole os produtos aqui, um por linha..."
+            style="width:100%; height:180px; padding:12px; border:1px solid #bdbdbd; border-radius:10px; font-size:1rem;">
+        </textarea>
+
+        <div id="lista-base-produtos"
+            style="margin-top:15px; max-height:150px; overflow-y:auto;">
+        </div>
+
+        <button class="btn-marrom" onclick="salvarBaseProdutos()">
+            Salvar Produtos
+        </button>
+
+        <button onclick="fecharModais()"
+            style="width:100%; border:none; background:none; color:gray; margin-top:10px;">
+            Cancelar
+        </button>
+    </div>
+</div>
+
+<div id="modal-confirm" class="modal">
+  <div class="modal-content" style="text-align:center;">
+    <h3 id="confirm-texto">Pergunta</h3>
+
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button class="btn-marrom" style="flex:1;" onclick="respostaConfirm(true)">
+        ✅ Sim
+      </button>
+
+      <button style="flex:1; border:none; background:#eee; border-radius:10px;"
+        onclick="respostaConfirm(false)">
+        ❌ Não
+      </button>
+    </div>
+  </div>
+</div>
+
+
+ <script>
+/* ================= PAGAMENTO ================= */
+const URL="https://script.google.com/macros/s/AKfycbzfECILT1uZZKyB040VPfssKjw4fmZkEHW_rMDaK1A3mhftkxsBSmyoDFQ7OXMx37DX/exec";         		   
+const KEY="higo123seguro";
+
+let pagamentoId=null;
+let intervalo=null;
+
+let tempo = 120;
+
+setInterval(()=>{
+    tempo--;
+
+    let min = Math.floor(tempo/60);
+    let seg = tempo % 60;
+
+    document.getElementById("timer").innerText =
+        `Oferta expira em ${String(min).padStart(2,'0')}:${String(seg).padStart(2,'0')}`;
+
+    if(tempo <= 0){
+        tempo = 120;
+    }
+},1000);
+
+let vagas = 7;
+
+setInterval(()=>{
+    if(vagas > 1){
+        vagas--;
+    }else{
+        vagas = 7;
+    }
+
+    document.getElementById("urgencia").innerText =
+        `⚠️ Últimas ${vagas} liberações hoje`;
+},5000);
+
+
+setTimeout(()=>{
+    document.getElementById("preco").innerText = "R$ 4,99";
+    document.getElementById("preco").style.color = "var(--pagamento-vermelho)";
+},30000);
+
+
+let callbackConfirm = null;
+
+function confirmar(texto, callback){
+    document.getElementById("confirm-texto").innerText = texto;
+    document.getElementById("modal-confirm").style.display = "flex";
+    callbackConfirm = callback;
+}
+
+function respostaConfirm(res){
+    document.getElementById("modal-confirm").style.display = "none";
+    if(callbackConfirm) callbackConfirm(res);
+}
+
+
+function liberar(){
+    if(!window.pagamentoConfirmado) return;
+
+    localStorage.setItem("pagamento_liberado", "sim");
+
+    document.getElementById("bloqueio").style.display = "none";
+    document.querySelector(".app-container").style.display = "flex";
+}
+function acessoPago(){
+    return window.pagamentoConfirmado === true ||
+           localStorage.getItem("pagamento_liberado") === "sim";
+}
+
+function chamarCobranca(){
+    document.getElementById("bloqueio").style.display = "flex";
+}
+
+function exigirPagamento(callback){
+    if(acessoPago()){
+        callback();
+    } else {
+        chamarCobranca();
+    }
+}
+
+async function verificarAcesso(){
+    const id = localStorage.getItem("pagamento_ok");
+
+    if(!id) return;
+
+    try{
+        const res = await fetch(`${URL}?action=status&id=${id}&key=${KEY}`);
+        const d = await res.json();
+
+        if(d.status === "APROVADO"){
+            window.pagamentoConfirmado = true;
+            liberar();
+			
+        } else {
+            // 🔥 ESSA LINHA FALTAVA
+            iniciarVerificacao();
+        }
+
+    }catch(e){
+        console.log("Erro ao verificar acesso");
+    }
+}
+
+function desmarcarComprados(){
+    if(!confirm("Desmarcar todos os produtos comprados?")) return;
+
+    db.listas[listaAtualIdx].itens.forEach(item => {
+        item.checked = false;
+    });
+
+    salvarDB();
+    renderizarDetalhe();
+}
+
+async function pagar(){
+    try{
+        document.getElementById("status").innerText="Gerando pagamento...";
+
+        const res=await fetch(URL,{
+            method:"POST",
+            body:JSON.stringify({
+                action:"criar",
+                key:KEY,
+                value:4.99,
+                title:"ZapLista Liberação"
+            })
+        });
+
+        const d=await res.json();
+
+        if(d.url){
+            pagamentoId=d.id;
+
+            // 🔥 SALVA O ID DO PAGAMENTO
+            localStorage.setItem("pagamento_ok", pagamentoId);
+
+            window.open(d.url, "_blank");
+            document.getElementById("status").innerText="Aguardando pagamento...";
+            iniciarVerificacao();
+        }
+
+    }catch(e){
+        document.getElementById("status").innerText="Erro ao gerar pagamento ❌";
+    }
+}
+
+function iniciarVerificacao(){
+    intervalo = setInterval(async () => {
+
+        // 🔥 pega sempre do localStorage (seguro)
+        const id = localStorage.getItem("pagamento_ok");
+
+        if(!id) return;
+
+        const res = await fetch(`${URL}?action=status&id=${id}&key=${KEY}`);
+        const d = await res.json();
+
+        if(d.status === "APROVADO"){
+            clearInterval(intervalo);
+            liberar();
+       }
+
+    }, 4000);
+}
+
+/* ================= APP ================= */
+	let db = JSON.parse(localStorage.getItem('zap_db'));
+
+if(!db){
+    db = {
+        listas: [
+            {
+                nome: "Compra do Mês",
+                orcamento: 350,
+                dataEdicao: new Date().toISOString(),
+                itens: [
+                    { nome: "Arroz", preco: 25.90, qtd: 1, isPeso: false, subtotal: 25.90, checked: false },
+                    { nome: "Feijão", preco: 8.99, qtd: 2, isPeso: false, subtotal: 17.98, checked: false },
+                    { nome: "Carne", preco: 39.90, qtd: 1.5, isPeso: true, subtotal: 59.85, checked: false }
+                ]
+            },
+            {
+                nome: "Churrasco",
+                orcamento: 220,
+                dataEdicao: new Date().toISOString(),
+                itens: [
+                    { nome: "Carvão", preco: 18.00, qtd: 1, isPeso: false, subtotal: 18.00, checked: false },
+                    { nome: "Linguiça", preco: 22.90, qtd: 1, isPeso: true, subtotal: 22.90, checked: false },
+                    { nome: "Refrigerante", preco: 9.50, qtd: 2, isPeso: false, subtotal: 19.00, checked: false }
+                ]
+            }
+        ]
+    };
+
+    localStorage.setItem('zap_db', JSON.stringify(db));
+}
+    let listaAtualIdx = null;
+	let baseProdutos = JSON.parse(localStorage.getItem('base_produtos')) || [];
+	
+    function mascaraMoeda(i) { let v = i.value.replace(/\D/g,''); v = (v/100).toFixed(2).replace(".", ","); i.value = v; }
+    function mascaraPeso(i) { if(!document.getElementById('prod-is-peso').checked) return; let v = i.value.replace(/\D/g,''); v = (v/1000).toFixed(3).replace(".", ","); i.value = v; }
+    function conv(v) { if(!v) return 0; return parseFloat(v.toString().replace(/\./g, '').replace(',', '.')); }
+    // Removemos qualquer espaço especial que o navegador tente colocar e usamos um espaço simples
+	function formatR$(v) { 
+    return "R$ " + parseFloat(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
+}
+
+	function atualizarSugestoesProdutos(){
+    localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
+
+    const campo = document.getElementById("prod-nome");
+    if(campo){
+        filtrarSugestoes(campo.value);
+    }
+}
+
+    function salvarDB() { localStorage.setItem('zap_db', JSON.stringify(db)); }
+	
+	function exportarBackup(){
+    const dados = {
+        listas: db.listas,
+        baseProdutos: baseProdutos,
+        dataBackup: new Date().toISOString()
+    };
+
+    const json = JSON.stringify(dados, null, 2);
+
+    // 🔥 cria arquivo como URL
+    const url = "data:application/json;charset=utf-8," + encodeURIComponent(json);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "zaplista-backup.json";
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+function importarBackup(event){
+
+    if(!acessoPago()){
+        event.target.value = "";
+        chamarCobranca();
+        return;
+    }
+    const file = event.target.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+        try{
+            const dados = JSON.parse(e.target.result);
+
+            db.listas = dados.listas || [];
+            baseProdutos = dados.baseProdutos || [];
+
+            salvarDB();
+            localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
+
+            renderizarHome();
+            atualizarSugestoesProdutos();
+
+            alert("Backup restaurado com sucesso!");
+        }catch(erro){
+            alert("Arquivo de backup inválido");
+        }
+    };
+
+    reader.readAsText(file);
+}
+	
+	
+	
+    function fecharModais() { document.querySelectorAll('.modal, .modal2').forEach(m => m.style.display='none'); }
+
+    function compararSelecionadas(){
+    const selecionadas = document.querySelectorAll('.check-lista:checked');
+
+    if(selecionadas.length !== 2){
+        alert("Selecione exatamente 2 listas");
+        return;
+    }
+
+    const idx1 = parseInt(selecionadas[0].value);
+    const idx2 = parseInt(selecionadas[1].value);
+
+    compararListasVisual(idx1, idx2);
+}
+	
+	function normalizarNome(nome){
+    return nome
+        .toLowerCase()
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+}
+	
+	function renderizarHome() {
+    const c = document.getElementById('container-listas');
+    c.innerHTML = "";
+
+    // ✅ cria cópia ordenada (NÃO altera o db)
+    const listasOrdenadas = [...db.listas].sort((a, b) =>
+        a.nome.trim().localeCompare(b.nome.trim())
+    );
+
+    listasOrdenadas.forEach((l) => {
+
+        // ✅ pega o índice REAL da lista no db original
+        const indexReal = db.listas.indexOf(l);
+
+        c.innerHTML += `
+        <div class="item-card">
+            
+            <div style="display:flex; align-items:center; gap:12px; margin-right:10px;">
+                <input type="checkbox" class="check-lista" value="${indexReal}" onclick="event.stopPropagation()">
+            </div>
+
+            <div style="flex-grow:1; cursor:pointer" onclick="abrirLista(${indexReal})">
+                <b>${l.nome.trim()}</b><br>
+                <small style="color:#999">
+                    Orçamento: ${formatR$(l.orcamento)}<br>
+                    Última edição: ${formatarData(l.dataEdicao)}
+                </small>
+            </div>
+
+            <div style="display:flex; gap:15px;">
+                <i class="fas fa-copy" style="color:var(--marrom-claro); cursor:pointer" onclick="clonarLista(event, ${indexReal})"></i>
+                <i class="fas fa-trash" style="color:#ffcccc; cursor:pointer" onclick="excluirLista(event, ${indexReal})"></i>
+            </div>
+
+        </div>`;
+    });
+}
+
+function renderizarBaseProdutos(){
+    const div = document.getElementById("lista-base-produtos");
+    if(!div) return;
+
+    div.innerHTML = "";
+
+    baseProdutos.forEach((nome, i) => {
+        div.innerHTML += `
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #eee;">
+            <span>${nome}</span>
+            <div style="display:flex; gap:10px;">
+                <span onclick="editarProdutoBase(${i})" style="cursor:pointer;">✏️</span>
+                <span onclick="removerProdutoBase(${i})" style="cursor:pointer;">🗑️</span>
+            </div>
+        </div>`;
+    });
+}
+
+
+function abrirModalBaseProdutos(){
+    document.getElementById("texto-base-produtos").value = "";
+    document.getElementById("modal-base-produtos").style.display = "flex";
+    renderizarBaseProdutos(); // 👈 aqui
+
+}
+
+function salvarBaseProdutos(){
+    const texto = document.getElementById("texto-base-produtos").value;
+
+    if(!texto.trim()){
+        alert("Cole pelo menos um produto");
+        return;
+    }
+
+    const linhas = texto
+        .split("\n")
+        .map(p => p.trim())
+        .filter(p => p.length > 0);
+
+    linhas.forEach(produto => {
+        const jaExiste = baseProdutos.some(p => 
+            p.toLowerCase() === produto.toLowerCase()
+        );
+
+        if(!jaExiste){
+            baseProdutos.push(produto);
+        }
+    });
+
+    localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
+    atualizarSugestoesProdutos();
+    renderizarBaseProdutos();
+
+    document.getElementById("texto-base-produtos").value = "";
+	filtrarSugestoes(document.getElementById("prod-nome").value);
+    alert("Salvo com sucesso");
+}
+function removerProdutoBase(i){
+    baseProdutos.splice(i, 1);
+    localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
+    atualizarSugestoesProdutos();
+    renderizarBaseProdutos();
+	filtrarSugestoes(document.getElementById("prod-nome").value);	
+	
+}
+function editarProdutoBase(i){
+    let novo = prompt("Editar produto:", baseProdutos[i]);
+
+    if(novo && novo.trim()){
+        baseProdutos[i] = novo.trim();
+        localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
+        atualizarSugestoesProdutos();
+        renderizarBaseProdutos();
+		filtrarSugestoes(document.getElementById("prod-nome").value);	
+		
+    }
+}
+
+function filtrarSugestoes(valor){
+    const box = document.getElementById("sugestoes-box");
+    if(!box) return;
+
+    if(!valor){
+        box.style.display = "none";
+        return;
+    }
+
+    const filtrados = baseProdutos
+        .filter(p => p.toLowerCase().includes(valor.toLowerCase()))
+        .slice(0, 10);
+
+    if(filtrados.length === 0){
+        box.style.display = "none";
+        return;
+    }
+
+    box.innerHTML = filtrados.map(p =>
+        `<div onclick="selecionarSugestao(this.innerText)" 
+            style="padding:10px; border-bottom:1px solid #eee; cursor:pointer;">
+            ${p}
+        </div>`
+    ).join("");
+
+    box.style.display = "block";
+}
+
+function selecionarSugestao(nome){
+    document.getElementById("prod-nome").value = nome;
+    document.getElementById("sugestoes-box").style.display = "none";
+}
+
+function formatarData(data){
+    if(!data) return "Sem data";
+    const d = new Date(data);
+    return d.toLocaleDateString('pt-BR') + " " + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+}
+
+    function renderizarDetalhe() {
+        const l = db.listas[listaAtualIdx];
+        document.getElementById('nome-lista-ativa').innerText = l.nome;
+        const container = document.getElementById('container-itens');
+        container.innerHTML = "";
+        
+        let totalLista = 0;
+        let totalConfirmado = 0;
+        let totalFaltou = 0;
+
+        // Organização dos ITENS: Comprados primeiro, depois A a Z
+        l.itens.sort((a, b) => {
+            if (a.checked !== b.checked) return a.checked ? -1 : 1;
+            return a.nome.trim().localeCompare(b.nome.trim());
+        });
+
+        l.itens.forEach((it, i) => {
+            totalLista += it.subtotal;
+            if(it.checked) totalConfirmado += it.subtotal;
+            else totalFaltou += it.subtotal;
+            
+            const txtQtd = it.isPeso ? it.qtd.toFixed(3).replace('.',',')+' kg' : it.qtd+' un';
+            const txtPreco = it.isPeso ? formatR$(it.preco)+'/kg' : formatR$(it.preco)+'/un';
+
+            container.innerHTML += `
+                <div class="item-card ${it.checked ? 'checked' : ''}" data-id="${i}">
+                    <div style="flex-grow:1" ondblclick="toggleCheck(${i})">
+                        <b style="${it.checked ? 'text-decoration:line-through;color:gray' : ''}">${it.nome.trim()}</b><br>
+                        <div class="info-row">${txtQtd} • ${txtPreco}</div>
+                        <div class="subtotal-row">Subtotal: ${formatR$(it.subtotal)}</div>
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <i class="fas fa-edit" style="color:#ccc; cursor:pointer" onclick="abrirModalProduto(${i})"></i>
+                        <i class="fas fa-trash" style="color:#ffcccc; cursor:pointer" onclick="removerProduto(${i})"></i>
+                    </div>
+                </div>`;
+        });
+
+    
+		const previsao = l.orcamento;
+        document.getElementById('label-saldo').innerHTML =
+       `SALDO DISPONÍVEL <span style="color:#6D553D">/ ${formatR$(previsao)}</span>`;
+        const saldo = previsao - totalConfirmado;
+
+let corSaldo = "#6D553D"; // marrom padrão
+
+if(saldo < 0){
+    corSaldo = "#e74c3c"; // vermelho se estourar
+}
+
+document.getElementById('disp-topo').innerHTML =
+    `<span style="color:${corSaldo}">${formatR$(saldo)}</span>`;
+        document.getElementById('conf-topo').innerText = formatR$(totalConfirmado);
+        document.getElementById('res-previsao').innerText = formatR$(previsao);
+        document.getElementById('res-confirmados').innerText = formatR$(totalConfirmado);
+        document.getElementById('res-total').innerText = formatR$(totalLista);
+        document.getElementById('res-faltou').innerText = formatR$(totalFaltou);
+        
+        const sobrou = previsao - totalLista;
+        if(sobrou < 0) {
+            document.getElementById('linha-sobrou').style.display = 'none';
+            document.getElementById('linha-ultrapassou').style.display = 'flex';
+            document.getElementById('res-ultrapassou').innerText = formatR$(Math.abs(sobrou));
+        } else {
+            document.getElementById('linha-sobrou').style.display = 'flex';
+            document.getElementById('linha-ultrapassou').style.display = 'none';
+            document.getElementById('res-sobrou').innerText = formatR$(sobrou);
+        }
+    }
+	
+	function abrirImportador(){
+    const modal = document.getElementById("modal-importar");
+    if(!modal){
+        alert("Modal não encontrado");
+        return;
+    }
+    modal.style.display = "flex";
+}
+	
+function importarListaWhats(){
+    const texto = document.getElementById("texto-whats").value;
+
+    if(!texto){
+        alert("Cole a mensagem primeiro");
+        return;
+    }
+
+    let linhas = texto.split("\n");
+
+    let novaLista = {
+        nome: "Lista Importada - " + new Date().toLocaleDateString(),
+        orcamento: 0,
+        itens: [],
+        dataEdicao: new Date().toLocaleDateString()
+    };
+
+    for(let i = 0; i < linhas.length; i++){
+        let linha = linhas[i].trim();
+
+        // 🔹 Identifica linha com produto (suporta emoji direto ou código Unicode)
+        if(linha.startsWith("✅") || linha.startsWith("⬜") || linha.startsWith("\u2705") || linha.startsWith("\u2B1C")){
+
+            // Pega nome do produto
+            let nomeMatch = linha.match(/\*(.*?)\*/);
+            if(!nomeMatch) continue;
+
+            let nome = nomeMatch[1];
+
+            // Próxima linha tem os dados
+            let detalhes = linhas[i + 1] || "";
+
+            let qtdMatch = detalhes.match(/([\d,]+)(kg|un)/);
+            
+            // AJUSTE AQUI: O \s* permite que ele leia o preço com ou sem espaços extras
+            let precoMatch = detalhes.match(/R\$\s*([\d,.]+)/);
+
+            if(qtdMatch && precoMatch){
+                let qtd = conv(qtdMatch[1]);
+                let preco = conv(precoMatch[1]);
+
+                const nomeLimpo = nome.trim();
+
+novaLista.itens.push({
+    nome: nomeLimpo,
+    preco: preco,
+    qtd: qtd,
+    isPeso: qtdMatch[2] === "kg",
+    subtotal: preco * qtd,
+    checked: false
+});
+
+// salva também na base de sugestões
+const jaExiste = baseProdutos.some(p =>
+    p.toLowerCase() === nomeLimpo.toLowerCase()
+);
+
+if(!jaExiste){
+    baseProdutos.push(nomeLimpo);
+}
+            }
+        }
+    }
+
+    if(novaLista.itens.length === 0){
+        alert("Nenhum produto encontrado \u{1F615}"); // Emoji de triste em Unicode
+        return;
+    }
+ 
+db.listas.push(novaLista);
+salvarDB();
+localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
+atualizarSugestoesProdutos();
+fecharModais();
+renderizarHome();
+
+alert("Lista importada com sucesso!");
+}
+	
+    function abrirLista(i) { listaAtualIdx = i; document.getElementById('view-home').classList.remove('active'); document.getElementById('view-detalhe').classList.add('active'); renderizarDetalhe(); }
+    function voltarParaHome() { listaAtualIdx = null; document.getElementById('view-detalhe').classList.remove('active'); document.getElementById('view-home').classList.add('active'); renderizarHome(); }
+    function toggleCheck(i) { db.listas[listaAtualIdx].itens[i].checked = !db.listas[listaAtualIdx].itens[i].checked; salvarDB(); renderizarDetalhe(); }
+    function abrirModalLista() { editandoListaIdx = null; document.getElementById('input-nome-lista').value = ""; document.getElementById('input-orcamento-lista').value = "0,00"; document.getElementById('modal-lista').style.display='flex'; }
+    function abrirModalEdicaoLista() { editandoListaIdx = listaAtualIdx; document.getElementById('input-nome-lista').value = db.listas[listaAtualIdx].nome; document.getElementById('input-orcamento-lista').value = db.listas[listaAtualIdx].orcamento.toFixed(2).replace('.',','); document.getElementById('modal-lista').style.display='flex'; }
+    function salvarLista() { const n = document.getElementById('input-nome-lista').value || "Lista"; const o = conv(document.getElementById('input-orcamento-lista').value); if(editandoListaIdx !== null) { db.listas[editandoListaIdx].nome = n; db.listas[editandoListaIdx].orcamento = o; db.listas[editandoListaIdx].dataEdicao = new Date().toISOString(); } else { db.listas.push({ nome: n, orcamento: o, itens: [], dataEdicao: new Date().toISOString() }); } salvarDB(); fecharModais(); renderizarHome(); if(listaAtualIdx !== null) renderizarDetalhe(); }
+    function excluirLista(e, i) { e.stopPropagation(); if(confirm("Excluir lista?")) { db.listas.splice(i,1); salvarDB(); renderizarHome(); } }
+    function clonarLista(e, i) {
+    e.stopPropagation();
+
+    if(!acessoPago()){
+        chamarCobranca();
+        return;
+    }
+
+    let nova = JSON.parse(JSON.stringify(db.listas[i]));
+    nova.nome += " (Cópia)";
+    nova.itens.forEach(it => it.checked = false);
+    nova.dataEdicao = new Date().toISOString();
+
+    db.listas.push(nova);
+    salvarDB();
+    renderizarHome();
+}
+	function abrirModalProduto(i=null) { editandoProdIdx = i; if(i!==null){ const it = db.listas[listaAtualIdx].itens[i]; document.getElementById('prod-nome').value = it.nome; document.getElementById('prod-preco').value = it.preco.toFixed(2).replace('.',','); document.getElementById('prod-qtd').value = it.isPeso ? it.qtd.toFixed(3).replace('.',',') : it.qtd; document.getElementById('prod-is-peso').checked = it.isPeso; } else { document.getElementById('prod-nome').value=""; document.getElementById('prod-preco').value="0,00"; document.getElementById('prod-qtd').value="1"; document.getElementById('prod-is-peso').checked=false; } document.getElementById('modal-produto').style.display='flex'; }
+    function salvarProduto() {
+    const p = conv(document.getElementById('prod-preco').value);
+    const q = conv(document.getElementById('prod-qtd').value);
+    const n = document.getElementById('prod-nome').value.trim() || "Produto";
+
+    // salva automaticamente na base de sugestões
+    const jaExiste = baseProdutos.some(prod =>
+        prod.toLowerCase() === n.toLowerCase()
+    );
+
+    if(!jaExiste && n !== "Produto"){
+        baseProdutos.push(n);
+        localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
+        atualizarSugestoesProdutos();
+    }
+
+    const novo = {
+        nome: n,
+        preco: p,
+        qtd: q,
+        isPeso: document.getElementById('prod-is-peso').checked,
+        subtotal: p * q,
+        checked: editandoProdIdx !== null ? db.listas[listaAtualIdx].itens[editandoProdIdx].checked : false
+    };
+
+    if(editandoProdIdx !== null) {
+        db.listas[listaAtualIdx].itens[editandoProdIdx] = novo;
+    } else {
+        db.listas[listaAtualIdx].itens.push(novo);
+    }
+
+    db.listas[listaAtualIdx].dataEdicao = new Date().toISOString();
+    salvarDB();
+    fecharModais();
+    renderizarDetalhe();
+}
+    function removerProduto(i) { if(confirm("Remover produto?")) { db.listas[listaAtualIdx].itens.splice(i,1); salvarDB(); renderizarDetalhe(); } }
+
+
+
+function comprar(){
+    document.getElementById("clickSound").play();
+
+    if(navigator.vibrate){
+        navigator.vibrate(100);
+    }
+
+    pagar(); // chama seu sistema real
+}
+
+function compararListasVisual(idx1, idx2) {
+    const lista1 = db.listas[idx1];
+    const lista2 = db.listas[idx2];
+
+    let mapa1 = {};
+    lista1.itens.forEach(i => {
+        mapa1[normalizarNome(i.nome)] = i;
+    });
+
+    let mapa2 = {};
+    lista2.itens.forEach(i => {
+        mapa2[normalizarNome(i.nome)] = i;
+    });
+
+    let novos = [];
+    let removidos = [];
+    let repetidosParaExibir = []; 
+
+    let total1 = 0;
+    let total2 = 0;
+
+    lista1.itens.forEach(i => total1 += i.subtotal);
+    lista2.itens.forEach(i => total2 += i.subtotal);
+
+    // diferença real dos itens em comum
+    let totalAumentos = 0;
+    let totalQuedas = 0;
+
+    for (let nome in mapa2) {
+        if (!mapa1[nome]) {
+            novos.push(mapa2[nome]);
+        } else {
+            let item1 = mapa1[nome];
+            let item2 = mapa2[nome];
+
+            let valor1 = item1.preco * item1.qtd;
+            let valor2 = item2.preco * item2.qtd;
+
+            repetidosParaExibir.push({
+                nome: item2.nome,
+                valorL1: valor1,
+                valorL2: valor2
+            });
+
+            if (valor2 > valor1) {
+                totalAumentos += valor2 - valor1;
+            } 
+            else if (valor2 < valor1) {
+                totalQuedas += valor1 - valor2;
+            }
+        }
+    }
+
+    for (let nome in mapa1) {
+        if (!mapa2[nome]) {
+            removidos.push(mapa1[nome]);
+        }
+    }
+
+    let economiaReal = totalQuedas - totalAumentos;
+    let diferenca = total2 - total1;
+
+    let html = `
+<div style="display:flex; justify-content:space-between; align-items:center; padding:20px 20px 0 20px;">
+    <h3>📊 Comparação</h3>
+    <span onclick="fecharModais()" style="cursor:pointer">✖</span>
+</div>
+
+<div style="padding:0 20px 10px 20px; overflow-y:auto; flex:1;">
+    <small>${lista1.nome} vs ${lista2.nome}</small>
+    <hr>
+
+    <b>🆕 Itens Diferentes (${lista2.nome})</b><br>
+    ${novos.length ? novos.map(i => {
+        const qtd = i.isPeso ? i.qtd.toFixed(3).replace('.',',') + ' kg' : i.qtd + ' un';
+        return `${lista2.nome} → • ${i.nome}: ${qtd} → ${formatR$(i.preco)}`;
+    }).join("<br>") : "Nenhum"}
+
+    <br><br>
+
+    <b>🆕 Itens Diferentes (${lista1.nome})</b><br>
+    ${removidos.length ? removidos.map(i => {
+        const qtd = i.isPeso ? i.qtd.toFixed(3).replace('.',',') + ' kg' : i.qtd + ' un';
+        return `${lista1.nome} → • ${i.nome}: ${qtd} → ${formatR$(i.preco)}`;
+    }).join("<br>") : "Nenhum"}
+
+    <br><br>
+
+    <b style="color:#2cb396">📈 Comparação de preço 📉</b><br>
+    ${repetidosParaExibir.length ? repetidosParaExibir.map(i => 
+        `• ${i.nome}: ${formatR$(i.valorL1)} (${lista1.nome}) → ${formatR$(i.valorL2)} (${lista2.nome})`
+    ).join("<br>") : "Nenhum item em comum"}
+
+    <hr>
+
+<b>💰 Total ${lista1.nome}:</b> ${formatR$(total1)}<br>
+<b>💰 Total ${lista2.nome}:</b> ${formatR$(total2)}<br>
+
+<b>📊 Diferença geral:</b> 
+${diferenca > 0 
+  ? `🔴 Gastou mais ${formatR$(Math.abs(diferenca))}` 
+  : diferenca < 0 
+    ? `🟢 Economizou ${formatR$(Math.abs(diferenca))}` 
+    : `🟡 Mesmo valor`}
+<br><br>
+
+<b>📈 Aumentos (itens em comum)</b><br>
+Aumentou ${formatR$(totalAumentos)} na ${lista2.nome}
+
+<br><br>
+
+<b>📉 Quedas (itens em comum)</b><br>
+Caiu ${formatR$(totalQuedas)} na ${lista2.nome}
+
+<br><br>
+
+<b>💵 Economia real (somente itens em comum):</b><br>
+${economiaReal > 0 
+  ? `🟢 Melhor comprar na ${lista2.nome} (economia de ${formatR$(economiaReal)})` 
+  : economiaReal < 0 
+    ? `🔴 Melhor comprar na ${lista1.nome} (economia de ${formatR$(Math.abs(economiaReal))})` 
+    : `🟡 Mesmo valor`}
+<br><br>
+
+<button class="btn-marrom" onclick="compartilharComparacao(${idx1}, ${idx2})">
+    📤 Compartilhar
+</button>
+</div>`;
+
+document.getElementById("modal-comparacao-content").innerHTML = html;
+document.getElementById("modal-comparacao").style.display = "flex";
+}
+
+function compartilharComparacao(idx1, idx2){
+    const lista1 = db.listas[idx1];
+    const lista2 = db.listas[idx2];
+
+    let mapa1 = {};
+    let mapa2 = {};
+
+    lista1.itens.forEach(i => mapa1[normalizarNome(i.nome)] = i);
+    lista2.itens.forEach(i => mapa2[normalizarNome(i.nome)] = i);
+
+    let novos = [];
+    let removidos = [];
+    let repetidos = [];
+
+    let total1 = 0;
+    let total2 = 0;
+
+    lista1.itens.forEach(i => total1 += i.subtotal);
+    lista2.itens.forEach(i => total2 += i.subtotal);
+
+    // 🔥 lógica correta (igual tela)
+    let totalAumentos = 0;
+    let totalQuedas = 0;
+
+    for (let nome in mapa2) {
+        if (!mapa1[nome]) {
+            novos.push(mapa2[nome]);
+        } else {
+            let i1 = mapa1[nome];
+            let i2 = mapa2[nome];
+
+            let v1 = i1.preco * i1.qtd;
+            let v2 = i2.preco * i2.qtd;
+
+            repetidos.push({
+                nome: i2.nome,
+                v1,
+                v2
+            });
+
+            if (v2 > v1) {
+                totalAumentos += (v2 - v1);
+            } else if (v2 < v1) {
+                totalQuedas += (v1 - v2);
+            }
+        }
+    }
+
+    for (let nome in mapa1) {
+        if (!mapa2[nome]) {
+            removidos.push(mapa1[nome]);
+        }
+    }
+
+    let diferenca = total2 - total1;
+    let economiaReal = totalQuedas - totalAumentos;
+
+    // 🔥 montar mensagem correta
+    let msg = `📊 *Comparação*\n`;
+    msg += `${lista1.nome} vs ${lista2.nome}\n\n`;
+
+    msg += `🆕 *Itens Diferentes (${lista2.nome})*\n`;
+    msg += novos.length 
+        ? novos.map(i => `${lista2.nome} → • ${i.nome}: ${i.qtd} → ${formatR$(i.preco)}`).join("\n")
+        : "Nenhum";
+
+    msg += `\n\n🆕 *Itens Diferentes (${lista1.nome})*\n`;
+    msg += removidos.length 
+        ? removidos.map(i => `${lista1.nome} → • ${i.nome}: ${i.qtd} → ${formatR$(i.preco)}`).join("\n")
+        : "Nenhum";
+
+    msg += `\n\n📈 *Comparação de preço* 📉\n`;
+    msg += repetidos.length 
+        ? repetidos.map(i => `• ${i.nome}: ${formatR$(i.v1)} (${lista1.nome}) → ${formatR$(i.v2)} (${lista2.nome})`).join("\n")
+        : "Nenhum";
+
+    msg += `\n\n💰 *Total ${lista1.nome}:* ${formatR$(total1)}\n`;
+    msg += `💰 *Total ${lista2.nome}:* ${formatR$(total2)}\n`;
+
+    msg += `📊 *Diferença geral:* `;
+    if(diferenca > 0){
+        msg += `🔴 Gastou mais ${formatR$(diferenca)}\n`;
+    } else if(diferenca < 0){
+        msg += `🟢 Economizou ${formatR$(Math.abs(diferenca))}\n`;
+    } else {
+        msg += `🟡 Mesmo valor\n`;
+    }
+
+    msg += `\n📈 *Aumentos (itens em comum)*\n`;
+    msg += `Aumentou ${formatR$(totalAumentos)} na ${lista2.nome}\n`;
+
+    msg += `\n📉 *Quedas (itens em comum)*\n`;
+    msg += `Caiu ${formatR$(totalQuedas)} na ${lista2.nome}\n`;
+
+    msg += `\n💵 *Economia real*\n`;
+    if(economiaReal > 0){
+        msg += `🟢 Melhor comprar na ${lista2.nome} (economia de ${formatR$(economiaReal)})`;
+    } else if(economiaReal < 0){
+        msg += `🔴 Melhor comprar na ${lista1.nome} (economia de ${formatR$(Math.abs(economiaReal))})`;
+    } else {
+        msg += `🟡 Mesmo valor`;
+    }
+
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+ function compartilharNoZap() {
+
+    if(!acessoPago()){
+        chamarCobranca();
+        return;
+    }
+
+    confirmar("Deseja enviar com resumo financeiro?", function(res){
+        compartilharNoZapProcesso(res);
+    });
+}
+
+function compartilharNoZapProcesso(enviarComResumo){
+    const l = db.listas[listaAtualIdx];
+    let tLista = 0, tConf = 0, tFaltou = 0;
+
+    l.itens.sort((a, b) => {
+        if (a.checked !== b.checked) return a.checked ? -1 : 1;
+        return a.nome.trim().localeCompare(b.nome.trim());
+    });
+
+    let msg = `*ZapLista: ${l.nome.toUpperCase().trim()}*\n\n`;
+
+    l.itens.forEach(it => {
+        tLista += it.subtotal;
+        if(it.checked) tConf += it.subtotal;
+        else tFaltou += it.subtotal;
+
+        const check = it.checked ? "\u2705" : "\u2B1C";
+        const unit = it.isPeso ? "/kg" : "/un";
+        const qtdStr = it.isPeso 
+            ? it.qtd.toFixed(3).replace('.',',')+'kg' 
+            : it.qtd+'un';
+
+        msg += `${check} *${it.nome.trim()}*\n`;
+        msg += `\u2514 ${qtdStr} x ${formatR$(it.preco)}${unit}: ${formatR$(it.subtotal)}\n`;
+    });
+
+    if(enviarComResumo){
+        const sobrou = l.orcamento - tLista;
+
+        msg += `\n*RESUMO FINANCEIRO:*\n`;
+        msg += `*Previsão:* ${formatR$(l.orcamento)}\n`;
+        msg += `*Confirmados:* ${formatR$(tConf)}\n`;
+        msg += `*Total na Lista:* ${formatR$(tLista)}\n`;
+        msg += `*Faltou:* ${formatR$(tFaltou)}\n`;
+
+        if(sobrou < 0){
+            msg += `*Ultrapassou:* ${formatR$(Math.abs(sobrou))}`;
+        } else {
+            msg += `*Sobrou:* ${formatR$(sobrou)}`;
+        }
+    }
+
+    msg += `\n\n*Que Deus abençoe sua despensa em nome de Jesus Cristo* \u{1F64F}\u{1F3FC}\u{1F64F}\u{1F3FC}\u{1F64F}\u{1F3FC}`;
+
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+
+
+    renderizarHome();
+
+/* INIT */
+verificarAcesso();
+atualizarSugestoesProdutos();
+
+// 🔥 quando o usuário voltar da aba de pagamento
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+        verificarAcesso();
+    }
+});
+let jaLiberado = false;
+</script>
+</body>
+</html>
