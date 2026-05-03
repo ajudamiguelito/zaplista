@@ -1,324 +1,725 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZapLista - Lista de Compras Inteligente</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="ZapLista - Sua compra organizada">
+    <meta property="og:description" content="Gaste menos no mercado e nunca mais esqueça um item.">
+    <meta property="og:image" content="https://zaplista.shop/zaplista.jpg">
+    <meta property="og:url" content="https://zaplista.shop">
+    <title>ZapLista - Organize suas compras</title>
 
-<style>
-:root{
-    --marrom:#6D553D;
-    --marrom-claro:#D4C3AF;
-    --verde:#22c55e;
-    --fundo:#f8f6f3;
-    --texto:#2b2b2b;
-    --branco:#fff;
+    <style>
+        :root {
+            --marrom: #6D553D;
+            --marrom-escuro: #3b2416;
+            --marrom-medio: #8a6543;
+            --bege: #f4eadc;
+            --bege-claro: #fff8ef;
+            --texto: #2b1b12;
+            --branco: #ffffff;
+            --verde: #25D366;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--bege-claro);
+            color: var(--texto);
+        }
+
+        .topo {
+            background: linear-gradient(90deg, var(--marrom-escuro), var(--marrom));
+            color: white;
+            padding: 18px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* Estilo do Menu de Índices */
+        .menu-indices {
+            display: flex;
+            gap: 20px;
+        }
+
+        .menu-indices a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            opacity: 0.8;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .menu-indices a:hover {
+            opacity: 1;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        
+
+        .hero {
+            min-height: 620px;
+            padding: 45px 22px 30px;
+            background:
+                radial-gradient(circle at 75% 35%, rgba(109, 85, 61, 0.18), transparent 28%),
+                linear-gradient(135deg, #fff8ef 0%, #f3dfc8 55%, #c99565 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-conteudo {
+            max-width: 1150px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 35px;
+            align-items: center;
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.65);
+            color: var(--marrom);
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: 58px;
+            line-height: 1.05;
+            margin-bottom: 20px;
+            color: var(--marrom-escuro);
+        }
+
+        .hero h1 span {
+            color: var(--marrom-medio);
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #4d3829;
+            max-width: 620px;
+            margin-bottom: 28px;
+        }
+
+        .botoes {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 18px 24px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 220px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-principal {
+            background: linear-gradient(180deg, #7b4e2f, #4a2b19);
+            color: white;
+            box-shadow: 0 10px 25px rgba(74, 43, 25, 0.25);
+        }
+
+        .btn-secundario {
+            background: #f3dcc4;
+            color: var(--marrom-escuro);
+        }
+
+        .confianca {
+            display: flex;
+            gap: 22px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+            color: #5b4332;
+            font-size: 15px;
+        }
+
+        .phone-area {
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .circulo {
+            position: absolute;
+            width: 360px;
+            height: 360px;
+            border-radius: 50%;
+            background: rgba(109, 85, 61, 0.18);
+            top: 45px;
+            right: 5px;
+        }
+
+        .phone {
+            position: relative;
+            width: 290px;
+            height: 570px;
+            background: #111;
+            border-radius: 42px;
+            padding: 12px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+            z-index: 2;
+        }
+
+        .phone img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 32px;
+            background: white;
+        }
+
+        .folha {
+            position: absolute;
+            right: -40px;
+            bottom: 30px;
+            font-size: 150px;
+            color: rgba(85, 50, 28, 0.35);
+            transform: rotate(-18deg);
+        }
+
+        .faixa {
+            max-width: 1050px;
+            margin: -55px auto 40px;
+            background: linear-gradient(90deg, var(--marrom-escuro), var(--marrom));
+            color: white;
+            border-radius: 18px;
+            padding: 25px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            position: relative;
+            z-index: 3;
+            box-shadow: 0 18px 35px rgba(59, 36, 22, 0.25);
+        }
+
+        .item-faixa {
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 10px;
+        }
+
+        .item-faixa:last-child {
+            border-right: none;
+        }
+
+        .item-faixa .icone {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .item-faixa h3 {
+            font-size: 17px;
+            margin-bottom: 6px;
+        }
+
+        .item-faixa p {
+            font-size: 14px;
+            color: #f0dfd0;
+        }
+
+        section {
+            max-width: 1050px;
+            margin: auto;
+            padding: 45px 22px;
+			scroll-margin-top: 90px; /* Isso faz o scroll parar antes do menu fixo */
+        }
+
+    
+
+
+        .titulo {
+            text-align: center;
+            font-size: 34px;
+            color: var(--marrom-escuro);
+            margin-bottom: 15px;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: #6b5546;
+            max-width: 650px;
+            margin: 0 auto 30px;
+            font-size: 18px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #ead8c6;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 22px rgba(109, 85, 61, 0.08);
+        }
+
+        .card h3 {
+            color: var(--marrom);
+            margin-bottom: 10px;
+        }
+
+        .dor {
+            background: #fff3ee;
+            border-radius: 24px;
+            padding: 35px;
+        }
+
+        .lista p {
+            margin: 10px 0;
+            font-size: 18px;
+        }
+
+        .preco {
+            text-align: center;
+            background: white;
+            border-radius: 26px;
+            box-shadow: 0 12px 35px rgba(109, 85, 61, 0.12);
+            padding: 40px 22px;
+        }
+
+        .valor {
+            font-size: 54px;
+            font-weight: 900;
+            color: var(--marrom);
+            margin: 10px 0;
+        }
+
+        .antigo {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 20px;
+        }
+
+        .urgencia {
+            background: #fff0d9;
+            color: #7a4b18;
+            padding: 14px;
+            border-radius: 14px;
+            margin: 20px auto;
+            max-width: 420px;
+            font-weight: bold;
+        }
+
+        .whatsapp-fixo {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            width: 58px;
+            height: 58px;
+            background: var(--verde);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 28px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            z-index: 20;
+        }
+
+        footer {
+            background: var(--marrom-escuro);
+            color: #f4e6d6;
+            text-align: center;
+            padding: 28px 18px;
+            margin-top: 40px;
+        }
+
+        /* Estilos do Manual de Vídeos */
+        .grid-videos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card-video {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-wrapper {
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .preco .btn-principal {
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        #aba-home, #aba-manual {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+		
+		/* Estilo dos botões brancos no menu */
+.btn-menu {
+    background: var(--branco);
+    color: var(--marrom-escuro) !important; /* Força a cor do texto */
+    padding: 10px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 13px;
+    transition: 0.3s;
+    opacity: 1 !important; /* Remove a transparência dos links antigos */
+    display: inline-block;
 }
 
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+.btn-menu:hover {
+    background: #f0e0d0; /* Muda levemente a cor ao passar o mouse */
+    transform: translateY(-2px);
 }
 
-body{
-    font-family: Arial, sans-serif;
-    background:var(--fundo);
-    color:var(--texto);
-    line-height:1.5;
+.btn-topo {
+            background: #f0d6bd;
+            color: var(--marrom-escuro);
+            padding: 12px 18px;
+            border-radius: 12px;
+			text-decoration: none;
+			font-weight: bold;
+			font-size: 13px;
+			transition: 0.3s;
+			opacity: 1 !important; /* Remove a transparência dos links antigos */
+			display: inline-block;
+}
+.btn-topo:hover {
+		background: #f0e0d0; /* Muda levemente a cor ao passar o mouse */
+		transform: translateY(-2px);
 }
 
-.container{
-    max-width:480px;
-    margin:auto;
-    background:var(--branco);
-    min-height:100vh;
-}
+		
+		
 
-section{
-    padding:28px 20px;
-}
+        @media(max-width:850px) {
+            .hero-conteudo {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
 
-.hero{
-    text-align:center;
-    background:linear-gradient(180deg,#fff,#f4eee8);
-    padding-top:40px;
-}
+            .hero h1 {
+                font-size: 38px;
+            }
 
-.logo{
-    font-size:28px;
-    font-weight:bold;
-    color:var(--marrom);
-    margin-bottom:15px;
-}
+            .hero p {
+                margin: auto auto 24px;
+                font-size: 17px;
+            }
 
-.hero h1{
-    font-size:28px;
-    margin-bottom:15px;
-}
+            .botoes {
+                justify-content: center;
+            }
 
-.hero p{
-    font-size:17px;
-    color:#555;
-    margin-bottom:22px;
-}
+            .confianca {
+                justify-content: center;
+            }
 
-.btn{
-    display:block;
-    width:100%;
-    background:var(--verde);
-    color:white;
-    text-align:center;
-    padding:16px;
-    border-radius:14px;
-    font-size:18px;
-    font-weight:bold;
-    text-decoration:none;
-    box-shadow:0 6px 14px rgba(34,197,94,0.25);
-    margin-top:15px;
-}
+            .phone {
+                width: 240px;
+                height: 470px;
+            }
 
-.btn-marrom{
-    background:var(--marrom);
-    box-shadow:0 6px 14px rgba(109,85,61,0.25);
-}
+            .circulo {
+                width: 280px;
+                height: 280px;
+            }
 
-.video-box{
-    background:#eee;
-    border-radius:18px;
-    height:240px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#777;
-    text-align:center;
-    padding:20px;
-    margin-top:15px;
-}
+            .faixa {
+                grid-template-columns: 1fr;
+                margin: 20px 18px 20px;
+            }
 
-.card{
-    background:#fafafa;
-    padding:18px;
-    border-radius:16px;
-    margin-bottom:14px;
-    border:1px solid #eee;
-}
+            .item-faixa {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+            }
 
-.card h3{
-    color:var(--marrom);
-    margin-bottom:6px;
-}
+            .item-faixa:last-child {
+                border-bottom: none;
+            }
 
-.dor{
-    background:#fff4f4;
-}
+            .cards {
+                grid-template-columns: 1fr;
+            }
 
-.solucao{
-    background:#f0fff8;
-}
+            .topo {
+                flex-direction: column;
+                gap: 12px;
+            }
 
-.preco{
-    text-align:center;
-    background:#fff;
-}
-
-.preco h2{
-    font-size:24px;
-    margin-bottom:10px;
-}
-
-.valor{
-    font-size:42px;
-    color:var(--verde);
-    font-weight:bold;
-    margin:10px 0;
-}
-
-.antigo{
-    color:#999;
-    text-decoration:line-through;
-    font-size:18px;
-}
-
-.urgencia{
-    background:#fff8e1;
-    color:#8a5a00;
-    padding:12px;
-    border-radius:12px;
-    margin:15px 0;
-    font-weight:bold;
-}
-
-.prova{
-    text-align:center;
-    background:#f4eee8;
-    font-weight:bold;
-    color:var(--marrom);
-}
-
-.lista{
-    margin-top:12px;
-}
-
-.lista p{
-    margin-bottom:8px;
-}
-
-footer{
-    text-align:center;
-    padding:25px 20px;
-    color:#777;
-    font-size:14px;
-}
-
-.whatsapp{
-    background:#25D366;
-}
-</style>
+            .menu-indices {
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container">
-
-    <!-- HERO -->
-    <section class="hero">
+    <header class="topo">
         <div class="logo">🛒 ZapLista</div>
+        <nav class="menu-indices">
+    <a onclick="navegar('home', 'como-funciona')" class="btn-menu">Como funciona</a>
+    <a onclick="navegar('manual')" class="btn-menu">Manual (Vídeos)</a>
+    <a onclick="navegar('home', 'comprar')" class="btn-menu">Preço</a>
+	</nav>
+    <a onclick="navegar('home', 'comprar')" class="btn-topo">Quero ter acesso</a>
+    </header>
 
-        <h1>Pare de esquecer itens no mercado e gastar mais do que deveria</h1>
+    <!-- ABA DA PÁGINA INICIAL -->
+    <div id="aba-home">
+        <main class="hero">
+            <div class="hero-conteudo">
+                <div>
+                    <div class="tag">⭐ Lista de compras inteligente</div>
+                    <h1>Organize suas compras e <span>gaste menos</span> no mercado.</h1>
+                    <p>Crie listas, controle seu orçamento, marque produtos comprados e envie tudo direto no WhatsApp com apenas 1 clique.</p>
+                    <div class="botoes">
+                        <a href="https://zaplista.shop/zaplista-app.html" class="btn btn-principal">🚀 Acessar Online</a>
+                        <a href="https://zaplista.shop/Zap-Lista.zip" download class="btn btn-secundario">📥 Baixar ZapLista</a>
+                    </div>
+                    <div class="confianca">
+                        <span>🛡️ Seguro e confiável</span>
+                        <span>⚡ Acesso imediato</span>
+                        <span>📱 Funciona no celular</span>
+                    </div>
+                </div>
+                <div class="phone-area">
+                    <div class="circulo"></div>
+                    <div class="phone">
+                        <img src="https://zaplista.shop/zaplista.jpg" alt="Tela do aplicativo ZapLista">
+                    </div>
+                    <div class="folha">❧</div>
+                </div>
+            </div>
+        </main>
 
-        <p>
-            Crie sua lista de compras inteligente, controle seus gastos
-            e envie tudo direto no WhatsApp com 1 clique.
-        </p>
-
-        <a href="#comprar" class="btn">✅ Começar agora</a>
-    </section>
-
-    <!-- VIDEO -->
-    <section>
-        <h2>Veja como funciona</h2>
-
-        <div class="video-box">
-            Coloque aqui seu vídeo demonstrando o ZapLista funcionando
-        </div>
-    </section>
-
-    <!-- BENEFICIOS -->
-    <section>
-        <h2>Por que usar o ZapLista?</h2>
-
-        <div class="card">
-            <h3>✔ Nunca mais esqueça nada</h3>
-            <p>Organize tudo antes de sair de casa e compre com mais segurança.</p>
-        </div>
-
-        <div class="card">
-            <h3>✔ Controle seus gastos</h3>
-            <p>Veja quanto sua compra vai dar antes mesmo de chegar no caixa.</p>
-        </div>
-
-        <div class="card">
-            <h3>✔ Compartilhe no WhatsApp</h3>
-            <p>Envie a lista completa para quem for comprar em poucos segundos.</p>
-        </div>
-    </section>
-
-    <!-- DOR -->
-    <section class="dor">
-        <h2>Isso já aconteceu com você?</h2>
-
-        <div class="lista">
-            <p>❌ Foi ao mercado e esqueceu item importante?</p>
-            <p>❌ Comprou coisas a mais sem perceber?</p>
-            <p>❌ Passou do orçamento no caixa?</p>
-        </div>
-
-        <p style="margin-top:15px;">
-            Isso acontece porque falta controle na hora de organizar a compra.
-        </p>
-    </section>
-
-    <!-- SOLUCAO -->
-    <section class="solucao">
-        <h2>Com o ZapLista você resolve isso</h2>
-
-        <div class="lista">
-            <p>✅ Cria listas organizadas</p>
-            <p>✅ Marca produtos comprados</p>
-            <p>✅ Calcula total da compra</p>
-            <p>✅ Mostra quanto sobrou ou ultrapassou</p>
-            <p>✅ Compartilha tudo no WhatsApp</p>
-        </div>
-    </section>
-
-    <!-- COMO FUNCIONA -->
-    <section>
-        <h2>Como funciona?</h2>
-
-        <div class="card">
-            <h3>1. Crie sua lista</h3>
-            <p>Digite o nome da compra e o orçamento.</p>
+        <div class="faixa">
+            <div class="item-faixa">
+                <div class="icone">✅</div>
+                <h3>Listas inteligentes</h3>
+                <p>Organize suas compras com facilidade.</p>
+            </div>
+            <div class="item-faixa">
+                <div class="icone">💰</div>
+                <h3>Controle de gastos</h3>
+                <p>Veja quanto vai gastar antes do caixa.</p>
+            </div>
+            <div class="item-faixa">
+                <div class="icone">📲</div>
+                <h3>Envio no WhatsApp</h3>
+                <p>Compartilhe sua lista em segundos.</p>
+            </div>
+            <div class="item-faixa">
+                <div class="icone">📦</div>
+                <h3>Backup</h3>
+                <p>Exporte e importe suas listas.</p>
+            </div>
         </div>
 
-        <div class="card">
-            <h3>2. Adicione os produtos</h3>
-            <p>Coloque nome, preço e quantidade.</p>
-        </div>
+        <section id="como-funciona">
+            <h2 class="titulo">Por que usar o ZapLista?</h2>
+            <p class="subtitulo">Um jeito simples de evitar esquecimento, controlar o orçamento e fazer compras com mais organização.</p>
+            <div class="cards">
+                <div class="card">
+                    <h3>✔ Nunca mais esqueça itens</h3>
+                    <p>Monte sua lista antes de sair de casa e compre com mais segurança.</p>
+                </div>
+                <div class="card">
+                    <h3>✔ Saiba o total da compra</h3>
+                    <p>Veja o valor total da lista e acompanhe o que já foi confirmado.</p>
+                </div>
+                <div class="card">
+                    <h3>✔ Envie para outra pessoa</h3>
+                    <p>Compartilhe a lista pelo WhatsApp para quem for ao mercado.</p>
+                </div>
+            </div>
+        </section>
+		
+		<section>
+            <h2 class="titulo">Como funciona?</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>1. Crie sua lista</h3>
+                    <p>Coloque o nome da compra e defina seu orçamento.</p>
+                </div>
+                <div class="card">
+                    <h3>2. Adicione produtos</h3>
+                    <p>Informe nome, preço e quantidade. O app calcula tudo.</p>
+                </div>
+                <div class="card">
+                    <h3>3. Compartilhe</h3>
+                    <p>Envie sua lista completa no WhatsApp com 1 clique.</p>
+                </div>
+            </div>
+        </section>
 
-        <div class="card">
-            <h3>3. Acompanhe o total</h3>
-            <p>Veja em tempo real quanto vai gastar.</p>
-        </div>
+        <section class="dor">
+            <h2 class="titulo">Isso já aconteceu com você?</h2>
+            <div class="lista">
+                <p>❌ Foi ao mercado e esqueceu item importante?</p>
+                <p>❌ Comprou coisas a mais sem perceber?</p>
+                <p>❌ Passou do orçamento no caixa?</p>
+                <p>❌ Mandou lista bagunçada pelo WhatsApp?</p>
+            </div>
+        </section>
 
-        <div class="card">
-            <h3>4. Envie no WhatsApp</h3>
-            <p>Compartilhe sua lista completa com apenas 1 clique.</p>
-        </div>
-    </section>
+        <section class="preco" id="comprar">
+            <h2 class="titulo">Libere seu acesso agora</h2>
+            <p class="antigo">De R$ 19,90</p>
+            <div class="valor">R$ 4,99</div>
+            <p>Pagamento único. Sem mensalidade.</p>
+            <div class="urgencia">⚠️ Oferta promocional por tempo limitado</div>
+            <a href="https://zaplista.shop/zaplista-app.html" class="btn btn-principal">🚀 Liberar meu acesso</a>
+            <a href="https://zaplista.shop/Zap-Lista.zip" download class="btn btn-secundario">📥 Baixar versão ZIP</a>
+        </section>
 
-    <!-- PROVA SOCIAL -->
-    <section class="prova">
-        🔥 Mais de 3.000 pessoas já estão organizando suas compras
-    </section>
+        <section style="background: #fff; border-radius: 18px; margin-top: 20px;">
+            <h2 class="titulo">Dúvidas Frequentes</h2>
+            <div style="padding: 10px 20px;">
+                <p><strong>O acesso é vitalício?</strong><br>Sim! Você paga uma vez e pode escolher baixar ou ter acesso pelo site.</p>
+                <hr style="margin: 15px 0; opacity: 0.1;">
+                <p><strong>Funciona em qualquer celular?</strong><br>Sim, basta ter acesso à internet e um navegador.</p>
+                <hr style="margin: 15px 0; opacity: 0.1;">
+                <p><strong>Posso acessar em outro aparelho?</strong><br>Não. Para cada pagamento é liberado apenas um aparelho.</p>
+                <hr style="margin: 15px 0; opacity: 0.1;">
+                <p><strong>Posso compartilhar com meu esposo?</strong><br>Sim. Mas cada um precisa do seu acesso após o pagamento.</p>
+            </div>
+        </section>
+    </div>
 
-    <!-- PRECO -->
-    <section class="preco" id="comprar">
-        <h2>Libere seu acesso agora</h2>
+    <!-- ABA DO MANUAL DE VÍDEOS -->
+    <div id="aba-manual" style="display: none;">
+        <section>
+            <h2 class="titulo">Manual de Uso</h2>
+            <p class="subtitulo">Aprenda a usar todas as funções do ZapLista com estes vídeos rápidos.</p>
+            
+            <div class="grid-videos">
+                <div class="card-video">
+                    <div class="video-wrapper">
+                        <!-- Substitua o ID abaixo pelo seu vídeo do YouTube -->
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Como criar sua primeira lista</h3>
+                </div>
+                <div class="card-video">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Configurando preços e quantidades</h3>
+                </div>
+                <div class="card-video">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp</h3>
+                </div>
+            </div>
 
-        <p class="antigo">De R$ 19,90</p>
-
-        <div class="valor">R$ 4,99</div>
-
-        <p>Pagamento único. Sem mensalidade.</p>
-
-        <div class="urgencia">
-            ⚠️ Oferta promocional por tempo limitado
-        </div>
-
-        <!-- TROQUE ESSE LINK PELO LINK DO SEU PAGAMENTO -->
-        <a href="https://SEU-LINK-DE-PAGAMENTO-AQUI" class="btn">
-            🚀 Liberar meu acesso
-        </a>
-    </section>
-
-    <!-- DUVIDAS -->
-    <section>
-        <h2>Ficou com dúvida?</h2>
-        <p>Fale direto no WhatsApp antes de liberar seu acesso.</p>
-
-        <!-- TROQUE O NUMERO PELO SEU WHATSAPP -->
-        <a href="https://wa.me/5500000000000?text=Quero%20saber%20mais%20sobre%20o%20ZapLista" class="btn whatsapp">
-            💬 Falar no WhatsApp
-        </a>
-    </section>
+            <div style="text-align: center; margin-top: 40px;">
+                <button onclick="navegar('home')" class="btn btn-principal">Voltar para o Início</button>
+            </div>
+        </section>
+    </div>
 
     <footer>
         <p><strong>ZapLista</strong></p>
         <p>Que Deus abençoe sua despensa 🙏</p>
     </footer>
 
-</div>
+    <a class="whatsapp-fixo" href="https://wa.me/5531996645814?text=Quero%20saber%20mais%20sobre%20o%20ZapLista">
+        💬
+    </a>
+
+    <script>
+        // Lógica de navegação entre Home e Manual
+        function navegar(aba, destinoId) {
+            const home = document.getElementById('aba-home');
+            const manual = document.getElementById('aba-manual');
+
+            if (aba === 'home') {
+                manual.style.display = 'none';
+                home.style.display = 'block';
+                if (destinoId) {
+                    setTimeout(() => {
+                        document.getElementById(destinoId).scrollIntoView({ behavior: 'smooth' });
+                    }, 50);
+                }
+            } else if (aba === 'manual') {
+                home.style.display = 'none';
+                manual.style.display = 'block';
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // Data automática na urgência
+        const urgencia = document.querySelector('.urgencia');
+        const hoje = new Date().toLocaleDateString('pt-BR');
+        urgencia.innerHTML = `⚠️ Oferta válida apenas para hoje, dia ${hoje}!`;
+
+        document.querySelector('.whatsapp-fixo').addEventListener('click', () => {
+            console.log('Usuário clicou no suporte via WhatsApp');
+        });
+    </script>
 
 </body>
+
 </html>
