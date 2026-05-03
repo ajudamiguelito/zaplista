@@ -226,18 +226,18 @@ input:focus {
 .modal-content2{
     background: white;
     border-radius: 20px;
-    width: 100%;
-    max-width: 420px;
-
-    max-height: 85vh;
+    width: calc(100vw - 20px);
+    max-width: 490px;
+	max-height: 90vh;
     display: flex;
     flex-direction: column; /* 🔥 importante */
     overflow: hidden;       /* 🔥 evita estourar */
 }
-
 .modal-comparacao {
     max-height: 90vh;
     overflow-y: auto;
+    padding-left: 8px;
+    padding-right: 8px;
 }
     
 .modal2{
@@ -713,51 +713,58 @@ function desmarcarComprados(){
 
 async function pagar(){
     try{
-        document.getElementById("status").innerText="Gerando pagamento...";
+        document.getElementById("status").innerText = "Gerando pagamento...";
 
-        const res=await fetch(URL,{
+        const res = await fetch(URL,{
             method:"POST",
-            body:JSON.stringify({
+            body: JSON.stringify({
                 action:"criar",
-                key:KEY,
-                value:4.99,
+                key: KEY,
+                value: 0.03,
                 title:"ZapLista Liberação"
             })
         });
 
-        const d=await res.json();
+        const d = await res.json();
 
         if(d.url){
-            pagamentoId=d.id;
+            pagamentoId = d.id;
 
-            // 🔥 SALVA O ID DO PAGAMENTO
             localStorage.setItem("pagamento_ok", pagamentoId);
 
             window.open(d.url, "_blank");
-            document.getElementById("status").innerText="Aguardando pagamento...";
+            document.getElementById("status").innerText = "Aguardando pagamento...";
             iniciarVerificacao();
         }
 
     }catch(e){
-        document.getElementById("status").innerText="Erro ao gerar pagamento ❌";
+        document.getElementById("status").innerText = "Erro ao gerar pagamento ❌";
     }
 }
 
 function iniciarVerificacao(){
-    intervalo = setInterval(async () => {
 
-        // 🔥 pega sempre do localStorage (seguro)
+    if(intervalo){
+        clearInterval(intervalo);
+    }
+
+    intervalo = setInterval(async () => {
         const id = localStorage.getItem("pagamento_ok");
 
         if(!id) return;
 
-        const res = await fetch(`${URL}?action=status&id=${id}&key=${KEY}`);
-        const d = await res.json();
+        try{
+            const res = await fetch(`${URL}?action=status&id=${id}&key=${KEY}`);
+            const d = await res.json();
 
-        if(d.status === "APROVADO"){
-            clearInterval(intervalo);
-            liberar();
-       }
+            if(d.status === "APROVADO"){
+                clearInterval(intervalo);
+                intervalo = null;
+                liberar();
+            }
+        }catch(e){
+            console.log("Erro ao verificar pagamento");
+        }
 
     }, 4000);
 }
@@ -1145,27 +1152,27 @@ function importarListaWhats(){
         nome: "Lista Importada - " + new Date().toLocaleDateString(),
         orcamento: 0,
         itens: [],
-        dataEdicao: new Date().toLocaleDateString()
+        dataEdicao: new Date().toISOString()
     };
 
     for(let i = 0; i < linhas.length; i++){
         let linha = linhas[i].trim();
 
-        // 🔹 Identifica linha com produto (suporta emoji direto ou código Unicode)
-        if(linha.startsWith("✅") || linha.startsWith("⬜") || linha.startsWith("\u2705") || linha.startsWith("\u2B1C")){
+        if(
+            linha.startsWith("✅") ||
+            linha.startsWith("⬜") ||
+            linha.startsWith("\u2705") ||
+            linha.startsWith("\u2B1C") ||
+            linha.startsWith("�")
+        ){
 
-            // Pega nome do produto
             let nomeMatch = linha.match(/\*(.*?)\*/);
             if(!nomeMatch) continue;
 
             let nome = nomeMatch[1];
-
-            // Próxima linha tem os dados
             let detalhes = linhas[i + 1] || "";
 
-            let qtdMatch = detalhes.match(/([\d,]+)(kg|un)/);
-            
-            // AJUSTE AQUI: O \s* permite que ele leia o preço com ou sem espaços extras
+            let qtdMatch = detalhes.match(/([\d,.]+)\s*(kg|un)/i);
             let precoMatch = detalhes.match(/R\$\s*([\d,.]+)/);
 
             if(qtdMatch && precoMatch){
@@ -1174,40 +1181,39 @@ function importarListaWhats(){
 
                 const nomeLimpo = nome.trim();
 
-novaLista.itens.push({
-    nome: nomeLimpo,
-    preco: preco,
-    qtd: qtd,
-    isPeso: qtdMatch[2] === "kg",
-    subtotal: preco * qtd,
-    checked: false
-});
+                novaLista.itens.push({
+                    nome: nomeLimpo,
+                    preco: preco,
+                    qtd: qtd,
+                    isPeso: qtdMatch[2].toLowerCase() === "kg",
+                    subtotal: preco * qtd,
+                    checked: false
+                });
 
-// salva também na base de sugestões
-const jaExiste = baseProdutos.some(p =>
-    p.toLowerCase() === nomeLimpo.toLowerCase()
-);
+                const jaExiste = baseProdutos.some(p =>
+                    p.toLowerCase() === nomeLimpo.toLowerCase()
+                );
 
-if(!jaExiste){
-    baseProdutos.push(nomeLimpo);
-}
+                if(!jaExiste){
+                    baseProdutos.push(nomeLimpo);
+                }
             }
         }
     }
 
     if(novaLista.itens.length === 0){
-        alert("Nenhum produto encontrado \u{1F615}"); // Emoji de triste em Unicode
+        alert("Nenhum produto encontrado 😕");
         return;
     }
- 
-db.listas.push(novaLista);
-salvarDB();
-localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
-atualizarSugestoesProdutos();
-fecharModais();
-renderizarHome();
 
-alert("Lista importada com sucesso!");
+    db.listas.push(novaLista);
+    salvarDB();
+    localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
+    atualizarSugestoesProdutos();
+    fecharModais();
+    renderizarHome();
+
+    alert("Lista importada com sucesso!");
 }
 	
     function abrirLista(i) { listaAtualIdx = i; document.getElementById('view-home').classList.remove('active'); document.getElementById('view-detalhe').classList.add('active'); renderizarDetalhe(); }
@@ -1373,12 +1379,41 @@ function compararListasVisual(idx1, idx2) {
 
     <br><br>
 
-    <b style="color:#2cb396">📈 Comparação de preço 📉</b><br>
-    ${repetidosParaExibir.length ? repetidosParaExibir.map(i => 
-        `• ${i.nome}: ${formatR$(i.valorL1)} (${lista1.nome}) → ${formatR$(i.valorL2)} (${lista2.nome})`
-    ).join("<br>") : "Nenhum item em comum"}
+<b style="color:#2cb396">📈 Comparação de preço 📉</b><br>
+${repetidosParaExibir.length ? repetidosParaExibir.map(i => {
 
-    <hr>
+    let cor1 = "#999"; // lista 1
+    let cor2 = "#999"; // lista 2
+
+    if(i.valorL2 > i.valorL1){
+        // lista 2 ficou mais cara
+        cor2 = "#e74c3c"; // vermelho
+        cor1 = "#2cb396"; // verde
+    }
+    else if(i.valorL2 < i.valorL1){
+        // lista 2 ficou mais barata
+        cor2 = "#2cb396"; // verde
+        cor1 = "#e74c3c"; // vermelho
+    }
+
+    return `
+<div style="margin-bottom:6px;">
+    • ${i.nome}<br>
+    
+    <span style="color:${cor1}; font-weight:bold;">
+        ${formatR$(i.valorL1)}
+    </span> (${lista1.nome}) 
+    
+    →
+    
+    <span style="color:${cor2}; font-weight:bold;">
+        ${formatR$(i.valorL2)}
+    </span> (${lista2.nome})
+</div>`;
+
+}).join("<br>") : "Nenhum item em comum"}
+
+<hr>
 
 <b>💰 Total ${lista1.nome}:</b> ${formatR$(total1)}<br>
 <b>💰 Total ${lista2.nome}:</b> ${formatR$(total2)}<br>
@@ -1392,20 +1427,20 @@ ${diferenca > 0
 <br><br>
 
 <b>📈 Aumentos (itens em comum)</b><br>
-Aumentou ${formatR$(totalAumentos)} na ${lista2.nome}
+Aumentou ${formatR$(totalAumentos)} na(o) ${lista2.nome}
 
 <br><br>
 
 <b>📉 Quedas (itens em comum)</b><br>
-Caiu ${formatR$(totalQuedas)} na ${lista2.nome}
+Caiu ${formatR$(totalQuedas)} na(o) ${lista2.nome}
 
 <br><br>
 
 <b>💵 Economia real (somente itens em comum):</b><br>
 ${economiaReal > 0 
-  ? `🟢 Melhor comprar na ${lista2.nome} (economia de ${formatR$(economiaReal)})` 
+  ? `🟢 Melhor comprar na(o) ${lista2.nome} (economia de ${formatR$(economiaReal)})` 
   : economiaReal < 0 
-    ? `🔴 Melhor comprar na ${lista1.nome} (economia de ${formatR$(Math.abs(economiaReal))})` 
+    ? `🔴 Melhor comprar na(o) ${lista1.nome} (economia de ${formatR$(Math.abs(economiaReal))})` 
     : `🟡 Mesmo valor`}
 <br><br>
 
@@ -1490,12 +1525,27 @@ function compartilharComparacao(idx1, idx2){
         : "Nenhum";
 
     msg += `\n\n📈 *Comparação de preço* 📉\n`;
-    msg += repetidos.length 
-        ? repetidos.map(i => `• ${i.nome}: ${formatR$(i.v1)} (${lista1.nome}) → ${formatR$(i.v2)} (${lista2.nome})`).join("\n")
-        : "Nenhum";
 
-    msg += `\n\n💰 *Total ${lista1.nome}:* ${formatR$(total1)}\n`;
-    msg += `💰 *Total ${lista2.nome}:* ${formatR$(total2)}\n`;
+msg += repetidos.length 
+    ? repetidos.map(i => {
+
+        let emoji = "⚪";
+
+        if(i.v2 > i.v1){
+            emoji = "🔴"; // aumentou
+        }
+        else if(i.v2 < i.v1){
+            emoji = "🟢"; // diminuiu
+        }
+
+        return `${emoji} *${i.nome}*\n` +
+               `└ ${formatR$(i.v1)} (${lista1.nome}) → ${formatR$(i.v2)} (${lista2.nome})`;
+
+    }).join("\n\n")
+    : "Nenhum item em comum";
+
+msg += `\n\n💰 *Total ${lista1.nome}:* ${formatR$(total1)}\n`;
+msg += `💰 *Total ${lista2.nome}:* ${formatR$(total2)}\n`;
 
     msg += `📊 *Diferença geral:* `;
     if(diferenca > 0){
@@ -1507,16 +1557,16 @@ function compartilharComparacao(idx1, idx2){
     }
 
     msg += `\n📈 *Aumentos (itens em comum)*\n`;
-    msg += `Aumentou ${formatR$(totalAumentos)} na ${lista2.nome}\n`;
+    msg += `Aumentou ${formatR$(totalAumentos)} na(o) ${lista2.nome}\n`;
 
     msg += `\n📉 *Quedas (itens em comum)*\n`;
-    msg += `Caiu ${formatR$(totalQuedas)} na ${lista2.nome}\n`;
+    msg += `Caiu ${formatR$(totalQuedas)} na(o)  ${lista2.nome}\n`;
 
     msg += `\n💵 *Economia real*\n`;
     if(economiaReal > 0){
-        msg += `🟢 Melhor comprar na ${lista2.nome} (economia de ${formatR$(economiaReal)})`;
+        msg += `🟢 Melhor comprar na(o) ${lista2.nome} (economia de ${formatR$(economiaReal)})`;
     } else if(economiaReal < 0){
-        msg += `🔴 Melhor comprar na ${lista1.nome} (economia de ${formatR$(Math.abs(economiaReal))})`;
+        msg += `🔴 Melhor comprar na(o) ${lista1.nome} (economia de ${formatR$(Math.abs(economiaReal))})`;
     } else {
         msg += `🟡 Mesmo valor`;
     }
