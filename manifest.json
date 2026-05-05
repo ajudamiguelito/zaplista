@@ -1,0 +1,20 @@
+{
+  "name": "ZapLista - App",
+  "short_name": "ZapLista",
+  "start_url": "zaplista-app.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "zaplista.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "zaplista.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
