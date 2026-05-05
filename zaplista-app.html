@@ -460,13 +460,25 @@ input:focus {
 </div>
 
     <div id="view-detalhe" class="view">
-        <div style="display:flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-            <div style="display:flex; align-items: center; gap: 12px;">
-                <i class="fas fa-arrow-left" onclick="voltarParaHome()" style="cursor:pointer; color: #888;"></i>
-                <h3 id="nome-lista-ativa" style="margin:0; color: var(--marrom-primario);"></h3>
+    <div style="display:flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+        <div style="display:flex; align-items: center; gap: 12px;">
+
+            <div onclick="voltarParaHome()" style="cursor:pointer; display:flex; align-items:center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="var(--marrom-claro)" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
             </div>
-            <button onclick="abrirModalEdicaoLista()" style="border:none; background:#eee; padding:5px 12px; border-radius:8px; font-size:0.75rem; font-weight:bold;">Editar</button>
+
+            <h3 id="nome-lista-ativa" style="margin:0; color: var(--marrom-primario);"></h3>
         </div>
+
+        <button onclick="abrirModalEdicaoLista()" style="border:none; background:#eee; padding:5px 12px; border-radius:8px; font-size:0.75rem; font-weight:bold;">
+            Editar
+        </button>
+    </div>
 
         <div class="budget-card">
             <div class="budget-main">
@@ -1045,10 +1057,31 @@ function importarBackup(event){
                 </small>
             </div>
 
-            <div style="display:flex; gap:15px;">
-                <i class="fas fa-copy" style="color:var(--marrom-claro); cursor:pointer" onclick="clonarLista(event, ${indexReal})"></i>
-                <i class="fas fa-trash" style="color:#ffcccc; cursor:pointer" onclick="excluirLista(event, ${indexReal})"></i>
-            </div>
+            <div style="display:flex; gap:15px; align-items:center;">
+
+    <!-- ÍCONE CLONAR LISTA -->
+    <div onclick="clonarLista(event, ${indexReal})" style="cursor:pointer; display:flex;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="var(--marrom-primario)" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+    </div>
+
+    <!-- ÍCONE EXCLUIR LISTA -->
+    <div onclick="excluirLista(event, ${indexReal})" style="cursor:pointer; display:flex;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="var(--vermelho-alerta)" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+    </div>
+
+</div>
 
         </div>`;
     });
@@ -1060,13 +1093,25 @@ function renderizarBaseProdutos(){
 
     div.innerHTML = "";
 
-    baseProdutos.forEach((nome, i) => {
+    const produtosOrdenados = baseProdutos
+        .map((nome, indexReal) => ({ nome, indexReal }))
+        .sort((a, b) => a.nome.trim().localeCompare(b.nome.trim(), 'pt-BR'));
+
+    produtosOrdenados.forEach((produto) => {
         div.innerHTML += `
         <div style="display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #eee;">
-            <span>${nome}</span>
-            <div style="display:flex; gap:10px;">
-                <span onclick="editarProdutoBase(${i})" style="cursor:pointer;">✏️</span>
-                <span onclick="removerProdutoBase(${i})" style="cursor:pointer;">🗑️</span>
+            <span>${produto.nome}</span>
+
+            <div style="display:flex; gap:10px; align-items:center;">
+
+                <span onclick="editarProdutoBase(${produto.indexReal})" style="cursor:pointer;">
+                    ✏️
+                </span>
+
+                <span onclick="removerProdutoBase(${produto.indexReal})" style="cursor:pointer;">
+                    🗑️
+                </span>
+
             </div>
         </div>`;
     });
@@ -1080,6 +1125,68 @@ function abrirModalBaseProdutos(){
 
 }
 
+function padronizarNomeProduto(nome){
+    return nome
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase()
+        .split(" ")
+        .map(palavra => palavra.charAt(0).toUpperCase() + palavra.slice(1))
+        .join(" ");
+}
+function linhaPareceProduto(linha){
+    linha = linha.trim();
+
+    if(!linha) return false;
+
+    // muito grande provavelmente é frase
+    if(linha.length > 35) return false;
+
+    // frases geralmente têm muitas palavras
+    if(linha.split(" ").length > 4) return false;
+
+    const texto = linha.toLowerCase();
+
+    // bloqueia frases comuns
+    const palavrasBloqueadas = [
+        "comprar",
+        "não",
+        "nao",
+        "amanhã",
+        "amanha",
+        "hoje",
+        "ontem",
+        "lista",
+        "mercado",
+        "supermercado",
+        "total",
+        "subtotal",
+        "previsão",
+        "previsao",
+        "confirmados",
+        "faltou",
+        "sobrou",
+        "ultrapassou",
+        "zaplista",
+        "que deus",
+        "abençoe",
+        "abencoe"
+    ];
+
+    if(palavrasBloqueadas.some(palavra => texto.includes(palavra))){
+        return false;
+    }
+
+    // ignora linha que tenha preço ou detalhe de quantidade
+    if(texto.includes("r$")) return false;
+    if(texto.includes("/kg")) return false;
+    if(texto.includes("/un")) return false;
+    if(texto.startsWith("└")) return false;
+
+    return true;
+}
+
+
 function salvarBaseProdutos(){
     const texto = document.getElementById("texto-base-produtos").value;
 
@@ -1090,12 +1197,38 @@ function salvarBaseProdutos(){
 
     const linhas = texto
         .split("\n")
-        .map(p => p.trim())
-        .filter(p => p.length > 0);
+        .map(linha => linha.trim())
+        .filter(linha => linha.length > 0);
 
-    linhas.forEach(produto => {
-        const jaExiste = baseProdutos.some(p => 
-            p.toLowerCase() === produto.toLowerCase()
+    let produtosExtraidos = [];
+
+    const temPadraoZapLista = linhas.some(linha =>
+        linha.match(/^(✅|⬜|\u2705|\u2B1C)\s*\*(.*?)\*/)
+    );
+
+    if(temPadraoZapLista){
+
+        linhas.forEach(linha => {
+            const produtoZap = linha.match(/^(✅|⬜|\u2705|\u2B1C)\s*\*(.*?)\*/);
+
+            if(produtoZap && produtoZap[2]){
+                produtosExtraidos.push(produtoZap[2]);
+            }
+        });
+
+    } else {
+
+        produtosExtraidos = linhas.filter(linhaPareceProduto);
+
+    }
+
+    produtosExtraidos = produtosExtraidos
+        .map(nome => padronizarNomeProduto(nome))
+        .filter(nome => nome.length > 0);
+
+    produtosExtraidos.forEach(produto => {
+        const jaExiste = baseProdutos.some(p =>
+            p.trim().toLowerCase() === produto.toLowerCase()
         );
 
         if(!jaExiste){
@@ -1103,14 +1236,19 @@ function salvarBaseProdutos(){
         }
     });
 
+    baseProdutos.sort((a, b) =>
+        a.trim().localeCompare(b.trim(), 'pt-BR')
+    );
+
     localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
     atualizarSugestoesProdutos();
     renderizarBaseProdutos();
 
     document.getElementById("texto-base-produtos").value = "";
-	filtrarSugestoes(document.getElementById("prod-nome").value);
-    alert("Salvo com sucesso");
+
+    alert(`${produtosExtraidos.length} produto(s) salvos com sucesso`);
 }
+
 function removerProdutoBase(i){
     baseProdutos.splice(i, 1);
     localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
@@ -1119,6 +1257,7 @@ function removerProdutoBase(i){
 	filtrarSugestoes(document.getElementById("prod-nome").value);	
 	
 }
+
 function editarProdutoBase(i){
     let novo = prompt("Editar produto:", baseProdutos[i]);
 
