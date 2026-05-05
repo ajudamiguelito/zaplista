@@ -339,23 +339,29 @@ input:focus {
     <div class="overlay"></div>
 
     <div class="box">
-        <h1>Desbloquear ZapLista</h1>
-        <p>Libere todas as funções agora</p>
+    <h1>Desbloquear ZapLista</h1>
+    <p>Libere todas as funções agora</p>
 
-        <div class="price" id="preco">R$ 4,99</div>
+    <div class="price" id="preco">R$ 4,99</div>
 
-        <button onclick="comprar()">Pagar e Liberar</button>
+    <p style="font-size:12px; color:#ddd; line-height:1.4; margin:0 0 15px;">
+        Atenção: a liberação fica salva neste navegador/dispositivo.
+        Se limpar cache, dados do site, trocar de navegador ou trocar de aparelho,
+        o acesso poderá ser perdido.
+    </p>
 
-        <div class="timer" id="timer">Oferta expira em 02:00</div>
+    <button onclick="comprar()">Pagar e Liberar</button>
 
-        <div class="urgencia" id="urgencia">
-            ⚠️ Últimas 7 liberações hoje
-        </div>
+    <div class="timer" id="timer">Oferta expira em 02:00</div>
 
-        <div class="social">🔥 +3.200 usuários já liberaram</div>
-
-        <div id="status" style="margin-top:10px;font-size:13px;color:#ccc;"></div>
+    <div class="urgencia" id="urgencia">
+        ⚠️ Últimas 7 liberações hoje
     </div>
+
+    <div class="social">🔥 +3.200 usuários já liberaram</div>
+
+    <div id="status" style="margin-top:10px;font-size:13px;color:#ccc;"></div>
+</div>
 
     <audio id="clickSound" src="https://www.myinstants.com/media/sounds/mouse-click.mp3"></audio>
 </div>
@@ -470,7 +476,16 @@ input:focus {
 			<button class="btn-marrom" onclick="desmarcarComprados()" style="margin-top:15px; margin-bottom:0;">
     🔄 Desmarcar Comprados
 </button>
-			
+			<div style="text-align:center; margin-top:12px; font-size:12px; color:#888; line-height:1.5;">
+    <span onclick="abrirTermos()" style="cursor:pointer; text-decoration:underline;">
+        Termos de Uso
+    </span>
+    <span style="margin:0 6px;">•</span>
+    <span onclick="abrirPolitica()" style="cursor:pointer; text-decoration:underline;">
+        Política de Privacidade
+    </span>
+</div>
+
         </div>
     </div>
 </div>
@@ -592,7 +607,57 @@ input:focus {
     </div>
   </div>
 </div>
+<div id="modal-termos" class="modal">
+    <div class="modal-content">
+        <h3>Termos de Uso</h3>
 
+        <p style="font-size:14px; color:#555; line-height:1.5;">
+            Ao utilizar o ZapLista, o usuário declara estar ciente de que o aplicativo funciona com dados salvos localmente no próprio navegador/dispositivo.
+        </p>
+
+        <p style="font-size:14px; color:#555; line-height:1.5;">
+            As listas, produtos, base de produtos, configurações e liberação de acesso podem ser apagadas caso o usuário limpe o cache, os dados do site, o armazenamento do navegador, troque de aparelho, troque de navegador ou reinstale o aplicativo.
+        </p>
+
+        <p style="font-size:14px; color:#555; line-height:1.5;">
+            É responsabilidade do usuário exportar backup das suas listas sempre que desejar guardar informações importantes.
+        </p>
+
+        <p style="font-size:14px; color:#555; line-height:1.5;">
+            A liberação do acesso é vinculada ao navegador/dispositivo utilizado. Em caso de perda dos dados locais, poderá ser necessário realizar nova liberação ou entrar em contato com o suporte.
+        </p>
+
+        <button class="btn-marrom" onclick="fecharModais()">Entendi</button>
+    </div>
+</div>
+
+<div id="modal-politica" class="modal">
+    <div class="modal-content">
+        <h3>Política de Privacidade</h3>
+
+        <p style="font-size:14px; color:#555; line-height:1.5;">
+            O ZapLista armazena as listas, produtos e preferências do usuário localmente no navegador/dispositivo, usando recursos como armazenamento local.
+        </p>
+
+        <p style="font-size:14px; color:#555; line-height:1.5;">
+            O aplicativo não exige cadastro pessoal para criar listas e não coleta dados sensíveis como documentos, endereço, senha bancária ou informações financeiras pessoais.
+        </p>
+
+        <p style="font-size:14px; color:#555; line-height:1.5;">
+            Informações relacionadas à liberação de acesso ou pagamento podem ser usadas apenas para validar o uso do aplicativo e liberar funcionalidades.
+        </p>
+
+        <p style="font-size:14px; color:#555; line-height:1.5;">
+            Caso o usuário limpe os dados do navegador, cache ou armazenamento do site, as informações salvas localmente poderão ser apagadas definitivamente.
+        </p>
+
+        <p style="font-size:14px; color:#555; line-height:1.5;">
+            Recomendamos exportar backup regularmente para evitar perda de listas importantes.
+        </p>
+
+        <button class="btn-marrom" onclick="fecharModais()">Entendi</button>
+    </div>
+</div>
 
  <script>
 /* ================= PAGAMENTO ================= */
@@ -644,6 +709,14 @@ function confirmar(texto, callback){
     document.getElementById("confirm-texto").innerText = texto;
     document.getElementById("modal-confirm").style.display = "flex";
     callbackConfirm = callback;
+}
+
+function abrirTermos(){
+    document.getElementById("modal-termos").style.display = "flex";
+}
+
+function abrirPolitica(){
+    document.getElementById("modal-politica").style.display = "flex";
 }
 
 function respostaConfirm(res){
@@ -720,7 +793,7 @@ async function pagar(){
             body: JSON.stringify({
                 action:"criar",
                 key: KEY,
-                value: 0.03,
+                value: 4.99,
                 title:"ZapLista Liberação"
             })
         });
