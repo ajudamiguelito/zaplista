@@ -391,7 +391,7 @@ input:focus {
                 <b style="color: var(--marrom-primario); font-size: 1.1rem;">ZapLista</b><br>
                 <small style="color: #888;">
                     <a href="https://www.instagram.com/clubtnp/" target="_blank" style="color:inherit; text-decoration:none;">
-                        @ClubTNP
+                        @ZapLista_
                     </a>
                 </small>
             </div>
@@ -635,15 +635,21 @@ input:focus {
 </div>
 
 <div id="modal-confirm" class="modal">
-  <div class="modal-content" style="text-align:center;">
+  <div class="modal-content" style="text-align:center; position:relative;">
+
+    <button onclick="fecharConfirmacao()"
+        style="position:absolute; top:12px; right:15px; border:none; background:none; font-size:20px; cursor:pointer; color:#888;">
+        ×
+    </button>
+
     <h3 id="confirm-texto">Pergunta</h3>
 
     <div style="display:flex; gap:10px; margin-top:20px;">
-      <button class="btn-marrom" style="flex:1;" onclick="respostaConfirm(true)">
+      <button class="btn-marrom" style="flex:1; margin-bottom:0;" onclick="respostaConfirm(true)">
         ✅ Sim
       </button>
 
-      <button style="flex:1; border:none; background:#eee; border-radius:10px;"
+      <button style="flex:1; border:none; background:#eee; border-radius:10px; cursor:pointer;"
         onclick="respostaConfirm(false)">
         ❌ Não
       </button>
@@ -765,6 +771,10 @@ function abrirPolitica(){
 function respostaConfirm(res){
     document.getElementById("modal-confirm").style.display = "none";
     if(callbackConfirm) callbackConfirm(res);
+}
+function fecharConfirmacao(){
+    document.getElementById("modal-confirm").style.display = "none";
+    callbackConfirm = null;
 }
 
 
@@ -1716,6 +1726,11 @@ ${economiaReal > 0
 
 <button class="btn-marrom" onclick="compartilharComparacao(${idx1}, ${idx2})">
     📤 Compartilhar
+</button>
+
+<button onclick="fecharModais()"
+    style="width:100%; border:none; background:none; color:gray; margin-top:10px; cursor:pointer;">
+    Cancelar
 </button>
 </div>`;
 
