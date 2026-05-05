@@ -836,7 +836,7 @@ async function pagar(){
             body: JSON.stringify({
                 action:"criar",
                 key: KEY,
-                value: 0.02,
+                value: 4.99,
                 title:"ZapLista Liberação"
             })
         });
@@ -916,8 +916,11 @@ if(!db){
 
     localStorage.setItem('zap_db', JSON.stringify(db));
 }
-    let listaAtualIdx = null;
-	let baseProdutos = JSON.parse(localStorage.getItem('base_produtos')) || [];
+
+let listaAtualIdx = null;
+let editandoListaIdx = null;
+let editandoProdIdx = null;
+let baseProdutos = JSON.parse(localStorage.getItem('base_produtos')) || [];
 	
     function mascaraMoeda(i) { let v = i.value.replace(/\D/g,''); v = (v/100).toFixed(2).replace(".", ","); i.value = v; }
     function mascaraPeso(i) { if(!document.getElementById('prod-is-peso').checked) return; let v = i.value.replace(/\D/g,''); v = (v/1000).toFixed(3).replace(".", ","); i.value = v; }
@@ -1262,12 +1265,11 @@ function editarProdutoBase(i){
     let novo = prompt("Editar produto:", baseProdutos[i]);
 
     if(novo && novo.trim()){
-        baseProdutos[i] = novo.trim();
+        baseProdutos[i] = padronizarNomeProduto(novo);
         localStorage.setItem("base_produtos", JSON.stringify(baseProdutos));
         atualizarSugestoesProdutos();
         renderizarBaseProdutos();
-		filtrarSugestoes(document.getElementById("prod-nome").value);	
-		
+        filtrarSugestoes(document.getElementById("prod-nome").value);	
     }
 }
 
