@@ -842,6 +842,14 @@ if(!db){
     a.click();
     document.body.removeChild(a);
 }
+function clicarImportarBackup(){
+    if(!acessoPago()){
+        chamarCobranca();
+        return;
+    }
+
+    document.getElementById("input-backup").click();
+}
 
 function importarBackup(event){
 
