@@ -18,7 +18,6 @@
     <!-- Manifest para o Android reconhecer como App -->
     <link rel="manifest" href="manifest.json">
 
-    <link rel="stylesheet" href="https://zaplista.shop/font-awesome.css">
 
 <style>
 :root {
@@ -382,23 +381,34 @@ input:focus {
 <!-- ===== APP ===== -->
 <div class="app-container">
     <div class="header">
-    <div class="logo-area" onclick="voltarParaHome()" style="cursor:pointer">
-        <div class="logo-icon"><i class="fas fa-shopping-basket"></i></div>
-        <div>
-            <b style="color: var(--marrom-primario); font-size: 1.1rem;">ZapLista</b><br>
-            <small style="color: #888;">
-    <a href="https://www.instagram.com/clubtnp/" target="_blank" style="color:inherit; text-decoration:none;">
-        @ClubTNP
-    </a>
-</small>
+        <div class="logo-area" onclick="voltarParaHome()" style="cursor:pointer">
+            <!-- Logo vinda direto do seu GitHub -->
+            <img src="https://raw.githubusercontent.com/ajudamiguelito/zaplista/main/LogoZapLista.png" 
+                 alt="Logo" 
+                 style="width: 42px; height: 42px; border-radius: 10px; object-fit: cover;">
+            
+            <div>
+                <b style="color: var(--marrom-primario); font-size: 1.1rem;">ZapLista</b><br>
+                <small style="color: #888;">
+                    <a href="https://www.instagram.com/clubtnp/" target="_blank" style="color:inherit; text-decoration:none;">
+                        @ClubTNP
+                    </a>
+                </small>
+            </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button onclick="exigirPagamento(abrirModalBaseProdutos)" class="btn-topo">+</button>
+            
+            <!-- SUBSTITUÍDO: Ícone da casa (Font Awesome) por um ícone SVG independente -->
+            <div onclick="voltarParaHome()" style="cursor: pointer; display: flex; align-items: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4C3AF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
         </div>
     </div>
-
-    <div style="display:flex; align-items:center; gap:10px;">
-        <button onclick="exigirPagamento(abrirModalBaseProdutos)" class="btn-topo">+</button>
-        <i class="fas fa-home fa-lg" style="color: var(--marrom-claro); cursor: pointer;" onclick="voltarParaHome()"></i>
-    </div>
-</div>
 
     <div id="view-home" class="view active">
         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -469,9 +479,14 @@ input:focus {
             </div>
         </div>
 
-        <button class="btn-marrom" onclick="exigirPagamento(() => abrirModalProduto())">
-            <i class="fas fa-plus-circle"></i> Adicionar Produto
-        </button>
+			<button class="btn-marrom" onclick="abrirModalProduto()" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="16"></line>
+        <line x1="8" y1="12" x2="16" y2="12"></line>
+    </svg>
+    Adicionar Produto
+</button>
 
         <div id="container-itens" style="flex-grow:1; overflow-y: auto; margin: 10px 0;"></div>
 
@@ -483,9 +498,12 @@ input:focus {
             <div class="summary-line" id="linha-sobrou"><span><b>Sobrou:</b></span> <span id="res-sobrou">R$ 0,00</span></div>
             <div class="summary-line" id="linha-ultrapassou" style="display:none"><span><b>Ultrapassou:</b></span> <span id="res-ultrapassou">R$ 0,00</span></div>
             
-            <button class="btn-marrom" onclick="exigirPagamento(compartilharNoZap)" style="margin-top:15px; margin-bottom:0;">
-                <i class="fab fa-whatsapp"></i> Compartilhar no WhatsApp
-            </button>
+            <button class="btn-marrom" onclick="compartilharNoZap()" style="margin-top:15px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Compartilhar no WhatsApp
+</button>
+
 			<button class="btn-marrom" onclick="desmarcarComprados()" style="margin-top:15px; margin-bottom:0;">
     🔄 Desmarcar Comprados
 </button>
@@ -806,7 +824,7 @@ async function pagar(){
             body: JSON.stringify({
                 action:"criar",
                 key: KEY,
-                value: 4.99,
+                value: 0.02,
                 title:"ZapLista Liberação"
             })
         });
@@ -1178,17 +1196,34 @@ function formatarData(data){
             const txtPreco = it.isPeso ? formatR$(it.preco)+'/kg' : formatR$(it.preco)+'/un';
 
             container.innerHTML += `
-                <div class="item-card ${it.checked ? 'checked' : ''}" data-id="${i}">
-                    <div style="flex-grow:1" ondblclick="toggleCheck(${i})">
-                        <b style="${it.checked ? 'text-decoration:line-through;color:gray' : ''}">${it.nome.trim()}</b><br>
-                        <div class="info-row">${txtQtd} • ${txtPreco}</div>
-                        <div class="subtotal-row">Subtotal: ${formatR$(it.subtotal)}</div>
-                    </div>
-                    <div style="display:flex; gap:12px;">
-                        <i class="fas fa-edit" style="color:#ccc; cursor:pointer" onclick="abrirModalProduto(${i})"></i>
-                        <i class="fas fa-trash" style="color:#ffcccc; cursor:pointer" onclick="removerProduto(${i})"></i>
-                    </div>
-                </div>`;
+    <div class="item-card ${it.checked ? 'checked' : ''}" data-id="${i}">
+        <div style="flex-grow:1" ondblclick="toggleCheck(${i})">
+            <b style="${it.checked ? 'text-decoration:line-through;color:gray' : ''}">${it.nome.trim()}</b><br>
+            <div class="info-row">${txtQtd} • ${txtPreco}</div>
+            <div class="subtotal-row">Subtotal: ${formatR$(it.subtotal)}</div>
+        </div>
+        <div style="display:flex; gap:15px; align-items: center;">
+            
+            <!-- ÍCONE EDITAR (SVG Marrom) -->
+            <div onclick="abrirModalProduto(${i})" style="cursor:pointer; display:flex;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--marrom-primario)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+            </div>
+
+            <!-- ÍCONE EXCLUIR (SVG Vermelho) -->
+            <div onclick="removerProduto(${i})" style="cursor:pointer; display:flex;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho-alerta)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+            </div>
+
+        </div>
+    </div>`;
         });
 
     
