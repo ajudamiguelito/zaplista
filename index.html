@@ -71,12 +71,13 @@
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    font-size: 24px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
 
         
 
@@ -509,6 +510,20 @@
 		transform: translateY(-2px);
 }
 
+.logo img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 50%;
+}
+.logo {
+    font-size: 24px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 		
 		
 
@@ -578,7 +593,10 @@
 <body>
 
     <header class="topo">
-        <div class="logo">🛒 ZapLista</div>
+        <div class="logo" onclick="navegar('home')">
+    <img src="https://zaplista.shop/LogoZapLista.png" alt="Logo ZapLista">
+    <span>ZapLista 🛒</span>
+</div>
         <nav class="menu-indices">
     <a onclick="navegar('home', 'como-funciona')" class="btn-menu">Como funciona</a>
     <a onclick="navegar('manual')" class="btn-menu">Manual (Vídeos)</a>
@@ -698,13 +716,13 @@
         <section id="duvidas" style="background: #fff; border-radius: 18px; margin-top: 20px;">
             <h2 class="titulo">Dúvidas Frequentes</h2>
             <div style="padding: 10px 20px;">
-                <p><strong>O acesso é vitalício?</strong><br>Sim! Você paga uma vez e pode escolher baixar ou ter acesso pelo site.</p>
+                <p><strong>Paga mensalidade?</strong><br>Não! Você escolher baixar ou ter acesso pelo site e após o apgamento é liberado.</p>
                 <hr style="margin: 15px 0; opacity: 0.1;">
                 <p><strong>Funciona em qualquer celular?</strong><br>Sim, basta ter acesso à internet e um navegador.</p>
                 <hr style="margin: 15px 0; opacity: 0.1;">
                 <p><strong>Posso acessar em outro aparelho?</strong><br>Não. Para cada pagamento é liberado apenas um aparelho.</p>
                 <hr style="margin: 15px 0; opacity: 0.1;">
-                <p><strong>Posso compartilhar com meu esposo?</strong><br>Sim. Mas cada um precisa do seu acesso após o pagamento.</p>
+                <p><strong>Posso compartilhar com meu esposo?</strong><br>Sim. Mas ele só vai ter acesso após o pagamento.</p>
             </div>
         </section>
     </div>
