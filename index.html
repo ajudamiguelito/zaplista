@@ -338,23 +338,39 @@
             font-weight: bold;
         }
 
-        .whatsapp-fixo {
-            position: fixed;
-            right: 18px;
-            bottom: 18px;
-            width: 58px;
-            height: 58px;
-            background: var(--verde);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            text-decoration: none;
-            font-size: 28px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-            z-index: 20;
-        }
+        .botoes-sociais-fixos {
+    position: fixed;
+    right: 16px;
+    bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 30;
+}
+
+.botao-social {
+    width: 56px;
+    height: 56px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+    transition: 0.25s;
+    overflow: hidden;
+}
+
+.botao-social:hover {
+    transform: translateY(-3px) scale(1.05);
+}
+
+.botao-social img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
 
         footer {
             background: var(--marrom-escuro);
@@ -379,17 +395,45 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
+ /* para vídeos deitados 16/9 */
+
+
         .video-wrapper {
             aspect-ratio: 16/9;
             background: #000;
             border-radius: 10px;
             overflow: hidden;
         }
+		
+/* para vídeos deitados 16/9 */
+	
 
         .video-wrapper iframe {
             width: 100%;
             height: 100%;
         }
+	
+ /* Estilo para vídeos verticais 9/16 tipo Reels */
+	
+		.video-wrapper2 {
+    aspect-ratio: 9/16;
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 260px;
+    margin: auto;
+}
+
+ /* Estilo para vídeos verticais 9/16 tipo Reels */
+
+.video-wrapper2 iframe {
+    width: 100%;
+    height: 100%;
+}
+		
+		
+		
+		
 
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -519,7 +563,7 @@
         <nav class="menu-indices">
     <a onclick="navegar('home', 'como-funciona')" class="btn-menu">Como funciona</a>
     <a onclick="navegar('manual')" class="btn-menu">Manual (Vídeos)</a>
-    <a onclick="navegar('home', 'comprar')" class="btn-menu">Dúvidas</a>
+    <a onclick="navegar('home', 'duvidas')" class="btn-menu">Dúvidas</a>
 	</nav>
     <a onclick="navegar('home', 'comprar')" class="btn-topo">Quero ter acesso</a>
     </header>
@@ -632,7 +676,7 @@
             <a href="https://zaplista.shop/Zap-Lista.zip" download class="btn btn-secundario">📥 Baixar versão ZIP</a>
         </section>
 
-        <section style="background: #fff; border-radius: 18px; margin-top: 20px;">
+        <section id="duvidas" style="background: #fff; border-radius: 18px; margin-top: 20px;">
             <h2 class="titulo">Dúvidas Frequentes</h2>
             <div style="padding: 10px 20px;">
                 <p><strong>O acesso é vitalício?</strong><br>Sim! Você paga uma vez e pode escolher baixar ou ter acesso pelo site.</p>
@@ -654,37 +698,98 @@
             
             <div class="grid-videos">
                 <div class="card-video">
-                    <div class="video-wrapper">
+                    <div class="video-wrapper2">
                         <!-- Substitua o ID abaixo pelo seu vídeo do YouTube -->
                         <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <h3>Como criar sua primeira lista</h3>
+                    <h3>Como criar sua primeira lista1</h3>
                 </div>
                 <div class="card-video">
+                    <div class="video-wrapper2">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Configurando preços e quantidades2</h3>
+                </div>
+                <div class="card-video">
+                    <div class="video-wrapper2">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp3</h3>
+                </div>
+				<div class="card-video">
+                    <div class="video-wrapper2">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp4</h3>
+                </div>
+				<div class="card-video">
+                    <div class="video-wrapper2">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp5</h3>
+                </div>
+				<div class="card-video">
+                    <div class="video-wrapper2">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp6</h3>
+                </div>
+				<div class="card-video">
+                    <div class="video-wrapper2">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp7</h3>
+                </div>
+				<div class="card-video">
+                    <div class="video-wrapper2">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp8</h3>
+                </div>
+				<div class="card-video">
+                    <div class="video-wrapper2">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp9</h3>
+                </div>									
+				<div class="card-video">
                     <div class="video-wrapper">
                         <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <h3>Configurando preços e quantidades</h3>
-                </div>
-                <div class="card-video">
-                    <div class="video-wrapper">
-                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                    <h3>Enviando para o WhatsApp</h3>
+                    <h3>Enviando para o WhatsApp10</h3>
                 </div>
 				<div class="card-video">
                     <div class="video-wrapper">
                         <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <h3>Enviando para o WhatsApp</h3>
+                    <h3>Enviando para o WhatsApp11</h3>
                 </div>
 				<div class="card-video">
                     <div class="video-wrapper">
                         <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
                     </div>
-                    <h3>Enviando para o WhatsApp</h3>
+                    <h3>Enviando para o WhatsApp12</h3>
                 </div>
-            </div>
+				<div class="card-video">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp13</h3>
+                </div>
+				<div class="card-video">
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/ID_DO_VIDEO" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <h3>Enviando para o WhatsApp 14</h3>
+                </div>
+            
+			
+			
+			
+			
+			
+			
+			</div>
 
             <div style="text-align: center; margin-top: 40px;">
                 <button onclick="navegar('home')" class="btn btn-principal">Voltar para o Início</button>
@@ -697,9 +802,33 @@
         <p>Que Deus abençoe sua despensa 🙏</p>
     </footer>
 
-    <a class="whatsapp-fixo" href="https://wa.me/5531996645814?text=Quero%20saber%20mais%20sobre%20o%20ZapLista">
-        💬
+    <div class="botoes-sociais-fixos">
+
+    <a class="botao-social"
+       href="https://wa.me/5531983509212?text=Gostaria%20de%20mais%20informa%C3%A7%C3%B5es...%0AQue%20Deus%20aben%C3%A7oe%20%F0%9F%99%8F%F0%9F%8F%BC%F0%9F%99%8F%F0%9F%8F%BC%F0%9F%99%8F%F0%9F%8F%BC"
+       target="_blank">
+        <img src="https://zaplista.shop/LogoZapLista.whtsapp.png" alt="WhatsApp ZapLista">
     </a>
+
+    <a class="botao-social"
+       href="https://www.instagram.com/zaplista_/"
+       target="_blank">
+        <img src="https://zaplista.shop/LogoZapLista.instagram.png" alt="Instagram ZapLista">
+    </a>
+
+    <a class="botao-social"
+       href="https://www.facebook.com/ZapLista"
+       target="_blank">
+        <img src="https://zaplista.shop/LogoZapLista.facebook.png" alt="Facebook ZapLista">
+    </a>
+
+    <a class="botao-social"
+       href="https://www.youtube.com/@Zaplista"
+       target="_blank">
+        <img src="https://zaplista.shop/LogoZapLista.YouTube.png" alt="YouTube ZapLista">
+    </a>
+
+</div>
 
     <script>
         // Lógica de navegação entre Home e Manual
@@ -726,10 +855,7 @@
         const urgencia = document.querySelector('.urgencia');
         const hoje = new Date().toLocaleDateString('pt-BR');
         urgencia.innerHTML = `⚠️ Oferta válida apenas para hoje, dia ${hoje}!`;
-
-        document.querySelector('.whatsapp-fixo').addEventListener('click', () => {
-            console.log('Usuário clicou no suporte via WhatsApp');
-        });
+		
     </script>
 
 </body>
