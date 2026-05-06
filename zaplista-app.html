@@ -1899,7 +1899,7 @@ function compartilharNoZapProcesso(enviarComResumo){
         msg += `\u2514 ${qtdStr} x ${formatR$(it.preco)}${unit}: ${formatR$(it.subtotal)}\n`;
     });
 
-    if(enviarComResumo){
+	if(enviarComResumo){
         const sobrou = l.orcamento - tLista;
 
         msg += `\n*RESUMO FINANCEIRO:*\n`;
