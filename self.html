@@ -227,116 +227,163 @@
     </div>
 
     <script>
-        let QUINTAPAG_var_selfieProcessada = null;
+        // ========== TELA 6: SELFIE RÁPIDA COM PREFIXO QUINTAPAG ==========
 
-        function QUINTAPAG_func_mostrarErro(msg) {
-            const erro = document.getElementById('QUINTAPAG_error');
-            erro.innerText = msg;
-            erro.style.display = 'block';
-        }
+let QUINTAPAG_Login_var_selfieProcessada = null;
 
-        function QUINTAPAG_func_limparErro() {
-            const erro = document.getElementById('QUINTAPAG_error');
-            erro.innerText = '';
-            erro.style.display = 'none';
-        }
+async function QUINTAPAG_Login_func_processarSelfie(QUINTAPAG_Login_input) {
+    if (!QUINTAPAG_Login_input.files || !QUINTAPAG_Login_input.files[0]) {
+        return PRIMEIRAPAG_Login_func_mostrarErro(
+            'QUINTAPAG_Login_error_selfie',
+            'Nenhuma imagem selecionada.'
+        );
+    }
 
-        async function QUINTAPAG_func_processarSelfie(input) {
-            QUINTAPAG_func_limparErro();
+    const QUINTAPAG_Login_arquivoOriginal = QUINTAPAG_Login_input.files[0];
 
-            if (!input.files || !input.files[0]) {
-                return QUINTAPAG_func_mostrarErro('Nenhuma imagem selecionada.');
-            }
+    if (!QUINTAPAG_Login_arquivoOriginal.type.startsWith('image/')) {
+        return PRIMEIRAPAG_Login_func_mostrarErro(
+            'QUINTAPAG_Login_error_selfie',
+            'Selecione uma imagem válida.'
+        );
+    }
 
-            const arquivoOriginal = input.files[0];
+    const QUINTAPAG_Login_tamanhoOriginalKB = (QUINTAPAG_Login_arquivoOriginal.size / 1024).toFixed(2);
 
-            if (!arquivoOriginal.type.startsWith('image/')) {
-                return QUINTAPAG_func_mostrarErro('Selecione uma imagem válida.');
-            }
+    const QUINTAPAG_Login_arquivoComprimido = await QUINTAPAG_Login_func_comprimirImagem(
+        QUINTAPAG_Login_arquivoOriginal,
+        0.75,
+        900,
+        900
+    );
 
-            const tamanhoOriginalKB = (arquivoOriginal.size / 1024).toFixed(2);
+    QUINTAPAG_Login_var_selfieProcessada = QUINTAPAG_Login_arquivoComprimido;
 
-            const arquivoComprimido = await QUINTAPAG_func_comprimirImagem(
-                arquivoOriginal,
-                0.75,
-                900,
-                900
-            );
+    const QUINTAPAG_Login_tamanhoFinalKB = (QUINTAPAG_Login_arquivoComprimido.size / 1024).toFixed(2);
 
-            QUINTAPAG_var_selfieProcessada = arquivoComprimido;
+    const QUINTAPAG_Login_preview = document.getElementById('QUINTAPAG_Login_preview_img');
+    QUINTAPAG_Login_preview.src = URL.createObjectURL(QUINTAPAG_Login_arquivoComprimido);
 
-            const tamanhoFinalKB = (arquivoComprimido.size / 1024).toFixed(2);
+    document.getElementById('QUINTAPAG_Login_preview_area').style.display = 'block';
 
-            const preview = document.getElementById('QUINTAPAG_preview_img');
-            preview.src = URL.createObjectURL(arquivoComprimido);
+    document.getElementById('QUINTAPAG_Login_info').innerHTML =
+        `Original: ${QUINTAPAG_Login_tamanhoOriginalKB} KB<br>` +
+        `Comprimida: ${QUINTAPAG_Login_tamanhoFinalKB} KB`;
+}
 
-            document.getElementById('QUINTAPAG_preview_area').style.display = 'block';
+function QUINTAPAG_Login_func_comprimirImagem(file, quality, maxWidth, maxHeight) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
 
-            document.getElementById('QUINTAPAG_info').innerHTML =
-                `Original: ${tamanhoOriginalKB} KB<br>` +
-                `Comprimida: ${tamanhoFinalKB} KB`;
-        }
+        reader.onload = function(event) {
+            const img = new Image();
 
-        function QUINTAPAG_func_comprimirImagem(file, quality, maxWidth, maxHeight) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
+            img.onload = function() {
+                let width = img.width;
+                let height = img.height;
 
-                reader.onload = function(event) {
-                    const img = new Image();
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = height * (maxWidth / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = width * (maxHeight / height);
+                        height = maxHeight;
+                    }
+                }
 
-                    img.onload = function() {
-                        let width = img.width;
-                        let height = img.height;
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
 
-                        if (width > height) {
-                            if (width > maxWidth) {
-                                height = height * (maxWidth / width);
-                                width = maxWidth;
-                            }
-                        } else {
-                            if (height > maxHeight) {
-                                width = width * (maxHeight / height);
-                                height = maxHeight;
-                            }
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob((blob) => {
+                    const arquivoFinal = new File(
+                        [blob],
+                        'selfie-tnp-mob.jpg',
+                        {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
                         }
+                    );
 
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
+                    resolve(arquivoFinal);
+                }, 'image/jpeg', quality);
+            };
 
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
+            img.src = event.target.result;
+        };
 
-                        canvas.toBlob((blob) => {
-                            const arquivoFinal = new File(
-                                [blob],
-                                'selfie-tnp-mob.jpg',
-                                {
-                                    type: 'image/jpeg',
-                                    lastModified: Date.now()
-                                }
-                            );
+        reader.readAsDataURL(file);
+    });
+}
 
-                            resolve(arquivoFinal);
-                        }, 'image/jpeg', quality);
-                    };
+async function QUINTAPAG_Login_func_confirmarSelfie() {
+    const QUINTAPAG_Login_user = PRIMEIRAPAG_Login_auth.currentUser;
+    const QUINTAPAG_Login_btn = document.getElementById('QUINTAPAG_Login_btn_confirmar_selfie');
 
-                    img.src = event.target.result;
-                };
+    if (!QUINTAPAG_Login_user) {
+        return PRIMEIRAPAG_Login_func_mostrarErro(
+            'QUINTAPAG_Login_error_selfie',
+            'Sua sessão expirou. Volte e faça login novamente.'
+        );
+    }
 
-                reader.readAsDataURL(file);
-            });
-        }
+    if (!QUINTAPAG_Login_var_selfieProcessada) {
+        return PRIMEIRAPAG_Login_func_mostrarErro(
+            'QUINTAPAG_Login_error_selfie',
+            'Tire ou selecione uma selfie antes de continuar.'
+        );
+    }
 
-        function QUINTAPAG_func_confirmarSelfie() {
-            QUINTAPAG_func_limparErro();
+    QUINTAPAG_Login_btn.disabled = true;
+    QUINTAPAG_Login_btn.innerText = "SALVANDO SELFIE...";
 
-            if (!QUINTAPAG_var_selfieProcessada) {
-                return QUINTAPAG_func_mostrarErro('Tire ou selecione uma selfie antes de continuar.');
+    try {
+        const QUINTAPAG_Login_caminho = `usuarios/${QUINTAPAG_Login_user.uid}/selfie.jpg`;
+
+        const QUINTAPAG_Login_storageRef = PRIMEIRAPAG_Login_storage
+            .ref()
+            .child(QUINTAPAG_Login_caminho);
+
+        await QUINTAPAG_Login_storageRef.put(QUINTAPAG_Login_var_selfieProcessada);
+
+        const QUINTAPAG_Login_selfieUrl = await QUINTAPAG_Login_storageRef.getDownloadURL();
+
+        await PRIMEIRAPAG_Login_db.collection('usuarios').doc(QUINTAPAG_Login_user.uid).set({
+            selfieUrl: QUINTAPAG_Login_selfieUrl,
+            selfieEnviada: true,
+            cadastroRapidoConcluido: true,
+            cadastroCompleto: false,
+            etapaCadastro: "entrada_app",
+            corridasIniciaisLiberadas: 3,
+            corridasUsadasSemCadastro: 0,
+            bloqueadoPorCadastro: false,
+            status: {
+                geral: "liberado_com_limite",
+                atualizadoEm: new Date()
             }
+        }, { merge: true });
 
-            document.getElementById('QUINTAPAG_sucesso').style.display = 'block';
-        }
+        QUINTAPAG_Login_btn.disabled = false;
+        QUINTAPAG_Login_btn.innerText = "CONFIRMAR SELFIE";
+
+        PRIMEIRAPAG_Login_func_irPara('PRIMEIRAPAG_Login_screen_welcome_usuario');
+
+    } catch (QUINTAPAG_Login_erro) {
+        QUINTAPAG_Login_btn.disabled = false;
+        QUINTAPAG_Login_btn.innerText = "CONFIRMAR SELFIE";
+
+        PRIMEIRAPAG_Login_func_mostrarErro(
+            'QUINTAPAG_Login_error_selfie',
+            'Erro ao salvar selfie: ' + QUINTAPAG_Login_erro.message
+        );
+    }
+}
     </script>
 
 </body>
